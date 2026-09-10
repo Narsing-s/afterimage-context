@@ -12,5 +12,5 @@ export function isSignalActive(s:Signal,now=Date.now()){return s.enabled&&s.perm
 export function buildSignalContext(signals:Signal[],manual=''){const active=signals.filter(s=>isSignalActive(s)).map(s=>`${s.label}: ${s.value}`);return [...active,manual.trim()].filter(Boolean).join(' · ')}
 export function grantSignal(signal:Signal,days=30):Signal{return {...signal,enabled:true,permission:'granted',updatedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+days*86400000).toISOString()}}
 export function revokeSignal(signal:Signal):Signal{return {...signal,enabled:false,permission:'off',updatedAt:new Date().toISOString(),expiresAt:undefined}}
-export function expireSignals(signals:Signal[],now=Date.now()){return signals.map(s=>s.expiresAt&&new Date(s.expiresAt).getTime()<=now?{...s,enabled:false,permission:'off'}:s)}
+export function expireSignals(signals:Signal[],now=Date.now()):Signal[]{return signals.map(s=>s.expiresAt&&new Date(s.expiresAt).getTime()<=now?{...s,enabled:false,permission:'off'}:s)}
 export function isValidMemory(value:unknown){if(!value||typeof value!=='object')return false;const m=value as Record<string,unknown>;return typeof m.id==='string'&&typeof m.text==='string'&&typeof m.mode==='string'&&typeof m.createdAt==='string'}
