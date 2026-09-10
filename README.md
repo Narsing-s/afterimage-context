@@ -11,7 +11,7 @@ You leave a small piece of knowledge today and attach it to a return condition. 
 ## The primitive
 
 ```text
-memory → return condition → context match → resurfacing
+memory → return condition → context → relevance → feedback → resurfacing
 ```
 
 ### A simple example
@@ -44,22 +44,27 @@ A task is attached to **action**.
 
 Afterimage is designed around **relevance**.
 
-The project does not claim that no adjacent product exists. The intended differentiation is the product primitive: **a memory is attached to a return condition rather than only a scheduled date.**
+The project does not claim that no adjacent product exists. The intended differentiation is the product primitive: **a memory is attached to a return condition and contextual relevance rather than only a scheduled date.**
 
-## Current MVP — v0.4
+## Current MVP — v0.7
 
 - Premium responsive dark interface
 - Explicit return-condition capture
 - Context signal and pattern trigger modes
-- Local browser persistence with a versioned storage key
-- Explainable local context matching
-- Match results show the return condition and **Why now?** explanation
-- Live local experiment lab with deliberate **NO RESURFACING** behavior
-- Local memory wall with explicit deletion
+- Adaptive memory lifecycle: active, confirmed, outdated, archived, snoozed
+- Confidence and resurfacing history
+- Local context graph and relationship explorer at `/graph`
+- Search/filtering across local memories
+- Local JSON export and schema-checked import
+- Configurable context sensitivity
+- Privacy-first Context Signals center at `/context-signals`
+- Browser-category, calendar-topic and manual/topic signal prototypes
+- Explicit signal grant/revoke controls
+- Local signal preview showing exactly what would influence matching
 - No account, ads, feed, streaks, or notification spam
 - GitHub Actions build workflow
 
-The current matcher is intentionally lightweight and local. It uses explainable term overlap and return-condition weighting; it is **not** marketed as semantic AI yet.
+The current matcher is intentionally lightweight and local. It uses explainable term overlap, return-condition weighting, confidence, repetition penalties and configurable sensitivity. It is **not** marketed as semantic AI yet.
 
 ## Run locally
 
@@ -78,9 +83,9 @@ npm run build
 
 ## Open-source project
 
-Afterimage is being built in public. We want contributors who are interested in the intersection of context, memory, privacy, human-computer interaction, and calm software.
+Afterimage is being built in public. We want contributors interested in context, memory, privacy, human-computer interaction, and calm software.
 
-Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOOD_FIRST_ISSUES.md`](GOOD_FIRST_ISSUES.md), and [`ROADMAP.md`](ROADMAP.md).
+Start with `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, and `ROADMAP.md`.
 
 ### Contributor missions
 
@@ -92,42 +97,36 @@ Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOOD_FIRST_ISSUES.md`](GOOD_F
 - 🎨 **Experience Designer** — calm resurfacing interactions
 - 🧪 **Reality Tester** — real-world scenario testing
 
-You don't need to be an expert. Documentation, research, UX, testing, and small fixes are valuable contributions.
+## Context Signals
 
-## Public experiments
+Context signals are deliberately opt-in. The v0.7 prototype does **not** silently read browser history, calendar data, location, or apps.
 
-We are especially interested in experiments around questions like:
+The Context Signals center lets users grant or revoke prototype signal categories, preview the composed context, tune matching sensitivity, and import portable memories. Signal settings are stored locally in the browser.
 
-- What should a computer remember for you?
-- What should it deliberately forget?
-- When does old knowledge become relevant again?
-- How can relevance be detected without surveillance?
-- Can context matching happen entirely on-device?
-
-If you have an idea, open a **Context experiment** issue.
-
-## Roadmap
-
-See [`ROADMAP.md`](ROADMAP.md) for the public roadmap and research questions.
-
-1. Local encrypted memory store
-2. Semantic return-condition engine
-3. Android client
-4. Browser capture extension
-5. Calendar/topic/context signals
-6. Personal pattern graph
-7. Optional encrypted sync
-8. Privacy controls, export/import, and complete deletion
+The production direction is explicit: every future context source must be **opt-in, explainable, revocable, privacy-preserving, and locally processed wherever practical**.
 
 ## Privacy direction
 
-The MVP is local-first: captured memories are stored in browser `localStorage` and are not sent to a server. Future integrations should be permission-based, transparent, and designed to keep sensitive context on-device wherever practical.
+The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and are not sent to a server. Future integrations should keep sensitive context on-device wherever practical.
 
-See [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`SECURITY.md`](SECURITY.md).
+See `ARCHITECTURE.md`, `SECURITY.md`, and `docs/PRODUCT_PRINCIPLES.md`.
+
+## Roadmap
+
+See `ROADMAP.md` for the public roadmap and research questions.
+
+1. Real permission-aware browser extension
+2. Calendar integration with explicit permission
+3. Signal expiry and per-memory sensitivity
+4. Local encrypted memory store
+5. On-device semantic matching option
+6. Android client
+7. Memory conflict / contradiction detection
+8. Optional encrypted synchronization
 
 ## Community standards
 
-Please read [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) before participating.
+Please read `CODE_OF_CONDUCT.md` before participating.
 
 ## License
 
