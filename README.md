@@ -4,10 +4,9 @@
 
 Afterimage explores a different relationship between software and memory.
 
-Most software asks **when** to remind you.
-Afterimage asks **when this becomes relevant again**.
+Most software asks **when** to remind you. Afterimage asks **when this becomes relevant again**.
 
-You leave a small piece of knowledge today. Instead of attaching it only to a date, you attach it to a return condition. When similar context appears later, Afterimage can bring the thought back.
+You leave a small piece of knowledge today and attach it to a return condition. When similar context appears later, the local context engine can bring the thought back.
 
 ## The primitive
 
@@ -20,6 +19,10 @@ memory → return condition → context match → resurfacing
 **Today**
 
 > I chose this hosting plan because migrating later would be more painful than paying a little extra.
+
+**Return condition**
+
+> When I compare hosting again.
 
 **Months later**
 
@@ -43,15 +46,20 @@ Afterimage is designed around **relevance**.
 
 The project does not claim that no adjacent product exists. The intended differentiation is the product primitive: **a memory is attached to a return condition rather than only a scheduled date.**
 
-## Current MVP
+## Current MVP — v0.4
 
 - Premium responsive dark interface
-- Context signal and pattern trigger capture
-- Local browser persistence
+- Explicit return-condition capture
+- Context signal and pattern trigger modes
+- Local browser persistence with a versioned storage key
+- Explainable local context matching
+- Match results show the return condition and **Why now?** explanation
+- Live local experiment lab with deliberate **NO RESURFACING** behavior
 - Local memory wall with explicit deletion
-- Context timeline demonstration
 - No account, ads, feed, streaks, or notification spam
 - GitHub Actions build workflow
+
+The current matcher is intentionally lightweight and local. It uses explainable term overlap and return-condition weighting; it is **not** marketed as semantic AI yet.
 
 ## Run locally
 
