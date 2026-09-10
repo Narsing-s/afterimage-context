@@ -62,8 +62,21 @@ The project does not claim that no adjacent product exists. The intended differe
 - Explicit signal grant/revoke controls
 - 30-day expiring signal permissions with automatic expiry
 - Local signal preview showing exactly what would influence matching
+- **Memory Health review at `/memory-review`**
+- **Fresh / familiar / fading / stale memory health**
+- **Review queue for memories that may no longer be reliable**
+- **Conflict Radar for potentially competing memories**
+- **Explicit user confirmation before a memory is treated as changed truth**
 - No account, ads, feed, streaks, or notification spam
 - GitHub Actions build workflow
+
+### Memory Health
+
+Memories are not permanent truth. Afterimage can now identify memories that are fresh, familiar, fading, or stale based on age, confidence, and resurfacing history. The `/memory-review` screen gives the user a calm review queue instead of silently rewriting old context.
+
+### Conflict Radar
+
+Two memories can both be useful while pointing in different directions. The Conflict Radar highlights possible competing memories that share meaningful context and lets the user decide which one is still true. It is intentionally conservative: a possible conflict is a prompt for review, not an automatic merge or deletion.
 
 The current matcher is intentionally lightweight and local. It uses explainable term overlap, return-condition weighting, confidence, repetition penalties and configurable sensitivity. It is **not** marketed as semantic AI yet.
 
@@ -75,6 +88,13 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+Useful routes:
+
+- `/` — capture, simulate, validate, and manage memories
+- `/memory-review` — review memory health and possible conflicts
+- `/context-signals` — manage local context signal permissions
+- `/graph` — explore local memory relationships
 
 ## Build
 
@@ -124,7 +144,7 @@ See `ROADMAP.md` for the public roadmap and research questions.
 4. Local encrypted memory store
 5. On-device semantic matching option
 6. Android client
-7. Memory conflict / contradiction detection
+7. Stronger memory conflict / contradiction detection
 8. Optional encrypted synchronization
 
 ## Community standards
