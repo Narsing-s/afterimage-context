@@ -43,6 +43,11 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Visible permission expiry dates
 - [x] Revocation before expiry
 - [x] Non-expired signals only influence composed context
+- [x] Memory health review at `/memory-review`
+- [x] Fresh / familiar / fading / stale memory states
+- [x] Review queue for fading and stale memories
+- [x] Possible-conflict radar for related memories
+- [x] Explicit user confirmation before changing memory truth
 - [ ] Real browser extension with explicit host permissions
 - [ ] Calendar integration with explicit account permission
 - [ ] Signal history with automatic expiry events
@@ -55,7 +60,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [ ] Android client
 - [ ] Local encrypted memory store
 - [ ] On-device semantic matching option
-- [ ] Memory conflict / contradiction detection
+- [ ] Stronger memory conflict / contradiction detection
 - [ ] Optional encrypted synchronization
 - [ ] Cross-device encrypted export/import
 
