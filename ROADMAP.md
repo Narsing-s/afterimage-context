@@ -24,16 +24,28 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Local graph/cluster explorer at `/graph`
 - [x] Explainable deterministic graph generation
 
-## Next — v0.7 Context Signals
+## Shipped — v0.7 Context Signals
 
-- [ ] Search and filtering
-- [ ] Import with schema validation
+- [x] Search and filtering of local memories
+- [x] Import with schema validation
+- [x] Context sensitivity control
+- [x] Permission center for context signals
+- [x] Browser-category signal prototype
+- [x] Calendar-topic signal prototype
+- [x] Manual/topic signal composition
+- [x] Explicit grant/revoke controls
+- [x] Local-only signal preview
+
+## Next — v0.8
+
+- [ ] Real browser extension with explicit host permissions
+- [ ] Calendar integration with explicit account permission
+- [ ] Signal history with automatic expiry
+- [ ] Per-memory sensitivity
 - [ ] Accessibility audit
-- [ ] Browser capture prototype with explicit permissions
-- [ ] Calendar/topic signals with opt-in controls
-- [ ] Context sensitivity settings
+- [ ] Better import/export versioning
 
-## Platform — v0.8–0.9
+## Platform — v0.9
 
 - [ ] Android client
 - [ ] Local encrypted memory store
@@ -67,4 +79,5 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - Selling memory data
 - Infinite feeds
 - Mandatory cloud accounts
+- Silent browser or calendar surveillance
 - Auto-deleting user conversations or memories
