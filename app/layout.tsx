@@ -1,5 +1,6 @@
 import './globals.css';
 import './nav-ribbon.css';
+import './ui-polish.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
