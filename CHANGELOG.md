@@ -1,10 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.8.0 — Context Signals Safety
 
-- Real permission-aware browser/calendar integrations planned for v0.8
-- Signal expiry and per-memory sensitivity planned
-- Local encrypted memory store planned
+- Added 30-day expiring signal permissions
+- Added automatic expiry of stale grants on load
+- Added visible signal expiry dates
+- Added early revocation support
+- Prevented expired signals from contributing to composed context
+- Kept browser/calendar prototypes local and permission-gated
 
 ## 0.7.0 — Context Signals
 
