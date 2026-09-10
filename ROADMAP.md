@@ -36,11 +36,16 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Explicit grant/revoke controls
 - [x] Local-only signal preview
 
-## Next — v0.8
+## Shipped — v0.8 Context Signals Safety
 
+- [x] Expiring signal permissions
+- [x] Automatic expiry of stale grants
+- [x] Visible permission expiry dates
+- [x] Revocation before expiry
+- [x] Non-expired signals only influence composed context
 - [ ] Real browser extension with explicit host permissions
 - [ ] Calendar integration with explicit account permission
-- [ ] Signal history with automatic expiry
+- [ ] Signal history with automatic expiry events
 - [ ] Per-memory sensitivity
 - [ ] Accessibility audit
 - [ ] Better import/export versioning
