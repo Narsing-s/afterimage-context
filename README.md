@@ -46,7 +46,7 @@ Afterimage is designed around **relevance**.
 
 The project does not claim that no adjacent product exists. The intended differentiation is the product primitive: **a memory is attached to a return condition and contextual relevance rather than only a scheduled date.**
 
-## Current MVP — v0.7
+## Current MVP — v0.8
 
 - Premium responsive dark interface
 - Explicit return-condition capture
@@ -60,6 +60,7 @@ The project does not claim that no adjacent product exists. The intended differe
 - Privacy-first Context Signals center at `/context-signals`
 - Browser-category, calendar-topic and manual/topic signal prototypes
 - Explicit signal grant/revoke controls
+- 30-day expiring signal permissions with automatic expiry
 - Local signal preview showing exactly what would influence matching
 - No account, ads, feed, streaks, or notification spam
 - GitHub Actions build workflow
@@ -99,11 +100,13 @@ Start with `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, and `ROADMAP.md`.
 
 ## Context Signals
 
-Context signals are deliberately opt-in. The v0.7 prototype does **not** silently read browser history, calendar data, location, or apps.
+Context signals are deliberately opt-in. The current prototype does **not** silently read browser history, calendar data, location, or apps.
 
-The Context Signals center lets users grant or revoke prototype signal categories, preview the composed context, tune matching sensitivity, and import portable memories. Signal settings are stored locally in the browser.
+The Context Signals center lets users grant or revoke prototype signal categories, preview the composed context, tune matching sensitivity, and import portable memories. A granted signal automatically expires after 30 days and can be revoked earlier. Expired signals are excluded from matching.
 
-The production direction is explicit: every future context source must be **opt-in, explainable, revocable, privacy-preserving, and locally processed wherever practical**.
+The browser integration direction uses least-privilege, user-initiated capture rather than background surveillance. Calendar integration will likewise require explicit account permission before reading any event context.
+
+The production direction is explicit: every future context source must be **opt-in, explainable, revocable, expiring, privacy-preserving, and locally processed wherever practical**.
 
 ## Privacy direction
 
@@ -117,7 +120,7 @@ See `ROADMAP.md` for the public roadmap and research questions.
 
 1. Real permission-aware browser extension
 2. Calendar integration with explicit permission
-3. Signal expiry and per-memory sensitivity
+3. Signal history and per-memory sensitivity
 4. Local encrypted memory store
 5. On-device semantic matching option
 6. Android client
