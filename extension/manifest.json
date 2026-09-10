@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "Afterimage Context Capture",
+  "version": "0.8.0",
+  "description": "User-initiated, least-privilege context capture for Afterimage.",
+  "permissions": ["activeTab", "tabs"],
+  "action": {"default_title": "Send this context to Afterimage", "default_popup": "popup.html"}
+}
