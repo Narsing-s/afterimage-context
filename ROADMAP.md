@@ -2,38 +2,54 @@
 
 Afterimage is an open exploration of context-memory computing. The roadmap is intentionally experimental.
 
-## Now — v0.3
+## Shipped — v0.5 Adaptive Memory
 
-- [ ] Context simulation
-- [ ] Return-condition data model
-- [ ] Explain why a memory resurfaced
-- [ ] Better local persistence
-- [ ] Unit tests for matching behavior
+- [x] Context simulation
+- [x] Return-condition data model
+- [x] Explain why a memory resurfaced
+- [x] Versioned local persistence
+- [x] Relevance scoring
+- [x] Memory confidence
+- [x] Resurfacing history
+- [x] Snooze and outdated controls
+- [x] Local export
+- [x] Memory inspector
 
-## Next — v0.4–0.5
+## Shipped — v0.6 Personal Context Graph
 
-- [ ] Relevance scoring
-- [ ] Memory confidence controls
-- [ ] Browser capture prototype
+- [x] Local context graph engine
+- [x] Shared-context relationships
+- [x] Shared-return-condition relationships
+- [x] Pattern relationships
+- [x] Local graph/cluster explorer at `/graph`
+- [x] Explainable deterministic graph generation
+
+## Next — v0.7 Context Signals
+
 - [ ] Search and filtering
-- [ ] Import/export
-- [ ] Accessibility pass
+- [ ] Import with schema validation
+- [ ] Accessibility audit
+- [ ] Browser capture prototype with explicit permissions
+- [ ] Calendar/topic signals with opt-in controls
+- [ ] Context sensitivity settings
 
-## Platform — v0.6–0.8
+## Platform — v0.8–0.9
 
 - [ ] Android client
-- [ ] Personal context graph
-- [ ] Calendar/topic/context signals
-- [ ] Local encryption
+- [ ] Local encrypted memory store
+- [ ] On-device semantic matching option
+- [ ] Memory conflict / contradiction detection
 - [ ] Optional encrypted synchronization
+- [ ] Cross-device encrypted export/import
 
 ## v1.0 direction
 
-- [ ] Stable memory format
-- [ ] Privacy controls and complete deletion
+- [ ] Stable portable memory format
+- [ ] Privacy center and complete deletion
 - [ ] Transparent resurfacing explanations
 - [ ] Extension/mobile integrations
 - [ ] Public API for approved local integrations
+- [ ] Reliable automated test suite
 
 ## Research questions
 
@@ -41,6 +57,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - How can relevance be inferred without surveillance?
 - How should users control sensitivity and confidence?
 - How do we prevent repeated or annoying resurfacing?
+- How should conflicting memories be represented?
 - Can useful context matching happen entirely on-device?
 
 ## What is deliberately not on the roadmap
