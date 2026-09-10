@@ -7,6 +7,7 @@ export type ContextMemory = {
   mode: ReturnMode;
   createdAt: string;
   trigger?: string;
+  why?: string;
   state?: MemoryState;
   confidence?: number;
   resurfacedAt?: string;
