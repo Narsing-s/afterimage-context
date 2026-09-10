@@ -6,9 +6,18 @@ import {ArrowLeft,CalendarDays,Check,Globe,RotateCcw,ShieldCheck,Sparkles,Toggle
 import {DEMO_SIGNALS,Signal,SignalPreferences,DEFAULT_SIGNAL_PREFERENCES,buildSignalContext,expireSignals,grantSignal,isValidMemory,isSignalActive,normalizePreferences,revokeSignal} from '../../lib/context-signals';
 import type {ContextMemory} from '../../lib/context-engine';
 const PREF='afterimage:signal-preferences:v1'; const SIG='afterimage:signals:v1'; const MEM='afterimage:memories:v2';
+function parseSignal(value:unknown):Signal|null{
+ if(!value||typeof value!=='object')return null;
+ const x=value as Record<string,unknown>;
+ const kind=x.kind;
+ const permission=x.permission;
+ if(typeof x.id!=='string'||(kind!=='browser'&&kind!=='calendar'&&kind!=='topic'&&kind!=='manual')||typeof x.label!=='string'||typeof x.value!=='string'||typeof x.enabled!=='boolean'||(permission!=='off'&&permission!=='granted')||typeof x.updatedAt!=='string')return null;
+ if(x.expiresAt!==undefined&&typeof x.expiresAt!=='string')return null;
+ return {id:x.id,kind,label:x.label,value:x.value,enabled:x.enabled,permission,updatedAt:x.updatedAt,expiresAt:x.expiresAt as string|undefined};
+}
 export default function ContextSignalsPage(){
  const [signals,setSignals]=useState<Signal[]>(DEMO_SIGNALS); const [prefs,setPrefs]=useState<SignalPreferences>(DEFAULT_SIGNAL_PREFERENCES); const [preview,setPreview]=useState(''); const [imported,setImported]=useState('');
- useEffect(()=>{try{const p=localStorage.getItem(PREF);if(p)setPrefs(normalizePreferences(JSON.parse(p)));let data:Signal[]=DEMO_SIGNALS;const s=localStorage.getItem(SIG);if(s){const parsed:unknown=JSON.parse(s);if(Array.isArray(parsed))data=parsed.filter((x):x is Signal=>typeof x==='object'&&x!==null&&typeof (x as Signal).id==='string'&&['browser','calendar','topic','manual'].includes((x as Signal).kind)&&typeof (x as Signal).label==='string'&&typeof (x as Signal).value==='string'&&typeof (x as Signal).enabled==='boolean'&&((x as Signal).permission==='off'||(x as Signal).permission==='granted')&&typeof (x as Signal).updatedAt==='string')}const params=new URLSearchParams(window.location.search);const browser=params.get('browser');if(browser){const next:Signal[]=data.map(x=>x.id==='browser'?grantSignal({...x,value:decodeURIComponent(browser)}):x);data=next;window.history.replaceState({},'',window.location.pathname)}data=expireSignals(data);setSignals(data);localStorage.setItem(SIG,JSON.stringify(data))}catch{}}
+ useEffect(()=>{try{const p=localStorage.getItem(PREF);if(p)setPrefs(normalizePreferences(JSON.parse(p)));let data:Signal[]=DEMO_SIGNALS;const s=localStorage.getItem(SIG);if(s){const parsed:unknown=JSON.parse(s);if(Array.isArray(parsed))data=parsed.map(parseSignal).filter((x):x is Signal=>x!==null)}const params=new URLSearchParams(window.location.search);const browser=params.get('browser');if(browser){const next=data.map(x=>x.id==='browser'?grantSignal({...x,value:decodeURIComponent(browser)}):x);data=next;window.history.replaceState({},'',window.location.pathname)}data=expireSignals(data);setSignals(data);localStorage.setItem(SIG,JSON.stringify(data))}catch{}}
  ,[]);
  function savePrefs(next:SignalPreferences){setPrefs(next);localStorage.setItem(PREF,JSON.stringify(next))}
  function toggle(i:number){setSignals(prev=>{const next:Signal[]=prev.map((s,n)=>n===i?(isSignalActive(s)?revokeSignal(s):grantSignal(s,30)):s);localStorage.setItem(SIG,JSON.stringify(next));return next})}
