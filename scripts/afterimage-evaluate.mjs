@@ -9,7 +9,7 @@
 const cases = [
   { id:'hosting', context:'I am comparing hosting providers and migration costs for a production app', memory:'I chose this hosting plan because migrating later would be more painful than paying a little extra', trigger:'when I compare hosting again', expected:true },
   { id:'database', context:'I am reviewing a PostgreSQL database migration and backup strategy', memory:'Before the last database migration, I chose smaller incremental changes because rollback mattered', trigger:'when database migrations come up again', expected:true },
-  { id:'vocabulary', context:'I am preparing a deployment and release for the service', memory:'The hosting platform was chosen because rollback was simple', trigger:'when I compare hosting again', expected:true },
+  { id:'vocabulary', context:'I am preparing a deployment and comparing a hosted service for release', memory:'The hosting platform was chosen because rollback was simple', trigger:'when I compare hosting again', expected:true },
   { id:'travel', context:'I am choosing a weekend train trip and checking hotel prices', memory:'I selected a laptop because its repairability was better than the cheaper alternative', trigger:'when buying a laptop again', expected:false },
   { id:'unrelated', context:'I am reading about gardening and tomato plants', memory:'The production API needed a longer timeout because the upstream service was slow', trigger:'when troubleshooting production APIs', expected:false },
 ];
