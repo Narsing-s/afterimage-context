@@ -48,30 +48,32 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Review queue for fading and stale memories
 - [x] Possible-conflict radar for related memories
 - [x] Explicit user confirmation before changing memory truth
+- [x] Signal history with automatic expiry events
+- [x] Per-memory sensitivity
+- [x] Versioned portable Memory Format v1
+- [x] Stronger deterministic local semantic matching
+- [x] Conservative local contradiction detection
 - [ ] Real browser extension with explicit host permissions
 - [ ] Calendar integration with explicit account permission
-- [ ] Signal history with automatic expiry events
-- [ ] Per-memory sensitivity
 - [ ] Accessibility audit
-- [ ] Better import/export versioning
 
 ## Platform — v0.9
 
 - [ ] Android client
 - [ ] Local encrypted memory store
-- [ ] On-device semantic matching option
-- [ ] Stronger memory conflict / contradiction detection
+- [x] On-device semantic matching option (deterministic, dependency-free baseline)
+- [x] Stronger memory conflict / contradiction detection baseline
 - [ ] Optional encrypted synchronization
-- [ ] Cross-device encrypted export/import
+- [x] Cross-device export/import through Memory Format v1
 
 ## v1.0 direction
 
-- [ ] Stable portable memory format
+- [x] Stable portable memory format v1 baseline
 - [ ] Privacy center and complete deletion
-- [ ] Transparent resurfacing explanations
-- [ ] Extension/mobile integrations
+- [x] Transparent resurfacing explanations
+- [x] Extension/mobile integration foundations
 - [ ] Public API for approved local integrations
-- [ ] Reliable automated test suite
+- [x] Reliable automated test suite baseline
 
 ## Research questions
 
@@ -81,6 +83,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - How do we prevent repeated or annoying resurfacing?
 - How should conflicting memories be represented?
 - Can useful context matching happen entirely on-device?
+- How far can local semantic matching improve without shipping personal context to a remote model?
 
 ## What is deliberately not on the roadmap
 
