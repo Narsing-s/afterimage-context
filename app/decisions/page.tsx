@@ -15,10 +15,12 @@ function loadItems(): DecisionMemory[]{try{const raw=localStorage.getItem(KEY)||
 function loadMemories(): ContextMemory[]{try{const x=JSON.parse(localStorage.getItem(MEMORY_KEY)||'[]');return Array.isArray(x)?x:[]}catch{return []}}
 function syncDecisionMemory(decision:DecisionMemory, remove=false){
  const memories=loadMemories();
- if(remove){localStorage.setItem(MEMORY_KEY,JSON.stringify(memories.filter(m=>m.id!==decision.linkedMemoryId)));return}
- const context=decisionMemoryToContext(decision);
- const next:ContextMemory={...context,trigger:`When a similar decision returns: ${decision.decision}`,why:`${decision.reason}${decision.alternatives?` Alternatives considered: ${decision.alternatives}.`:''}${decision.constraints?` Constraints: ${decision.constraints}.`:''}${decision.expectedOutcome?` Expected outcome: ${decision.expectedOutcome}.`:''}${decision.actualOutcome?` Actual outcome: ${decision.actualOutcome}.`:''}${decision.wouldChooseAgain?` Would choose again: ${decision.wouldChooseAgain}.`:''}`};
- const index=memories.findIndex(m=>m.id===next.id); if(index>=0) memories[index]=next; else memories.unshift(next); localStorage.setItem(MEMORY_KEY,JSON.stringify(memories.slice(0,100)));
+ const linkedId=decision.linkedMemoryId||`decision-memory:${decision.id}`;
+ if(remove){localStorage.setItem(MEMORY_KEY,JSON.stringify(memories.filter(m=>m.id!==linkedId)));return}
+ const context=decisionMemoryToContext({...decision,linkedMemoryId:linkedId});
+ const existing=memories.find(m=>m.id===linkedId);
+ const next:ContextMemory={...context,id:linkedId,trigger:`When a similar decision returns: ${decision.decision}`,why:`${decision.reason}${decision.alternatives?` Alternatives considered: ${decision.alternatives}.`:''}${decision.constraints?` Constraints: ${decision.constraints}.`:''}${decision.expectedOutcome?` Expected outcome: ${decision.expectedOutcome}.`:''}${decision.actualOutcome?` Actual outcome: ${decision.actualOutcome}.`:''}${decision.wouldChooseAgain?` Would choose again: ${decision.wouldChooseAgain}.`:''}`,resurfacedCount:existing?.resurfacedCount??context.resurfacedCount??0,resurfacedAt:existing?.resurfacedAt??context.resurfacedAt,snoozedUntil:existing?.snoozedUntil??context.snoozedUntil,state:existing?.state==='outdated'?'active':existing?.state??context.state??'active',confidence:existing?.confidence??context.confidence??decision.confidence};
+ const index=memories.findIndex(m=>m.id===linkedId); if(index>=0) memories[index]=next; else memories.unshift(next); localStorage.setItem(MEMORY_KEY,JSON.stringify(memories.slice(0,100)));
 }
 
 export default function DecisionsPage(){
@@ -26,7 +28,7 @@ export default function DecisionsPage(){
  useEffect(()=>setItems(loadItems()),[]);
  const recent=useMemo(()=>[...items].sort((a,b)=>+new Date(b.createdAt)-+new Date(a.createdAt)),[items]);
  function persist(next:DecisionMemory[]){setItems(next);localStorage.setItem(KEY,JSON.stringify(next));}
- function add(){if(!draft.decision.trim()||!draft.reason.trim())return;const d:DecisionMemory={...draft,id:createDecisionId(),confidence:.7,createdAt:new Date().toISOString()};syncDecisionMemory(d);persist([d,...items]);setDraft(empty);setSaved(true);setTimeout(()=>setSaved(false),2200)}
+ function add(){if(!draft.decision.trim()||!draft.reason.trim())return;const d:DecisionMemory={...draft,id:createDecisionId(),confidence:.7,createdAt:new Date().toISOString(),linkedMemoryId:`decision-memory:${createDecisionId()}`};d.linkedMemoryId=`decision-memory:${d.id}`;syncDecisionMemory(d);persist([d,...items]);setDraft(empty);setSaved(true);setTimeout(()=>setSaved(false),2200)}
  function updateDecision(id:string,patch:Partial<DecisionMemory>){const next=items.map(x=>x.id===id?{...x,...patch,reviewedAt:new Date().toISOString()}:x);const updated=next.find(x=>x.id===id);persist(next);if(updated)syncDecisionMemory(updated)}
  function remove(id:string){const decision=items.find(x=>x.id===id);if(decision)syncDecisionMemory(decision,true);persist(items.filter(x=>x.id!==id))}
  return <main className="future-page">
