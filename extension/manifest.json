@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Afterimage — Context Memory",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Save useful context now and resurface it when a matching page returns.",
   "permissions": ["activeTab", "tabs", "storage"],
   "action": {"default_title": "Afterimage", "default_popup": "popup.html"},
+  "options_ui": {"page": "options.html", "open_in_tab": true},
   "background": {"service_worker": "background.js"},
   "content_scripts": [{"matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_idle"}]
 }
