@@ -1,0 +1,92 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Check, Download, ShieldCheck, Sparkles } from 'lucide-react';
+
+const KEY = 'afterimage:memories:v2';
+
+type Memory = {
+  id: string;
+  text: string;
+  trigger?: string;
+  why?: string;
+  mode?: 'signal' | 'pattern';
+  state?: string;
+  confidence?: number;
+  resurfacedCount?: number;
+  createdAt?: string;
+  source?: string;
+  sourceUrl?: string;
+};
+
+function normalize(input: unknown): Memory[] {
+  if (!Array.isArray(input)) return [];
+  return input.filter((item): item is Memory => !!item && typeof item === 'object' && typeof (item as Memory).text === 'string').map((item) => ({
+    ...item,
+    id: item.id || crypto.randomUUID(),
+    mode: item.mode || 'signal',
+    state: item.state || 'active',
+    confidence: typeof item.confidence === 'number' ? item.confidence : 0.7,
+    resurfacedCount: typeof item.resurfacedCount === 'number' ? item.resurfacedCount : 0,
+    createdAt: item.createdAt || new Date().toISOString()
+  }));
+}
+
+export default function ExtensionBridge() {
+  const [incoming, setIncoming] = useState<Memory[]>([]);
+  const [saved, setSaved] = useState(0);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get('memories');
+    if (!raw) { setReady(true); return; }
+    try {
+      const decoded = JSON.parse(decodeURIComponent(raw));
+      setIncoming(normalize(decoded));
+    } catch {
+      setIncoming([]);
+    }
+    setReady(true);
+  }, []);
+
+  const merge = () => {
+    try {
+      const existing = normalize(JSON.parse(localStorage.getItem(KEY) || '[]'));
+      const byId = new Map(existing.map((memory) => [memory.id, memory]));
+      incoming.forEach((memory) => byId.set(memory.id, { ...byId.get(memory.id), ...memory }));
+      localStorage.setItem(KEY, JSON.stringify([...byId.values()].slice(0, 300)));
+      setSaved(incoming.length);
+    } catch { setSaved(0); }
+  };
+
+  const exportMemories = () => {
+    const memories = normalize(JSON.parse(localStorage.getItem(KEY) || '[]'));
+    const blob = new Blob([JSON.stringify(memories, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'afterimage-memories.json'; a.click(); URL.revokeObjectURL(url);
+  };
+
+  const countLabel = useMemo(() => incoming.length === 1 ? '1 browser memory' : `${incoming.length} browser memories`, [incoming.length]);
+
+  return <main className="shell" style={{minHeight:'100vh',padding:'42px 24px'}}>
+    <section className="hero" style={{maxWidth:860,margin:'0 auto'}}>
+      <Link href="/" className="navlink"><ArrowLeft size={14}/> Back to Afterimage</Link>
+      <div className="eyebrow" style={{marginTop:30}}><span className="pulse"/> EXTENSION BRIDGE</div>
+      <h1>One memory system.<br/><em>Every surface.</em></h1>
+      <p className="lede">Move memories captured by the browser extension into your main Afterimage library without sending them to a server.</p>
+      <div className="capture" style={{marginTop:28}}>
+        <div className="capture-top"><span><Sparkles size={15}/> Browser → Afterimage</span><span className="hint">Local merge</span></div>
+        {!ready ? <p>Reading the local handoff…</p> : incoming.length === 0 ? <div className="empty-match"><span>NOTHING TO IMPORT</span><b>Open this page from the Afterimage extension's Sync button.</b><p>Your browser memories never need to leave the device.</p></div> : <>
+          <div className="preview" role="status"><div className="preview-icon"><ShieldCheck size={18}/></div><div><b>{countLabel} ready.</b><p>They will be merged with your existing Afterimage library. Existing IDs are updated rather than duplicated.</p></div></div>
+          <div className="match-actions"><button className="create-memory" onClick={merge}><Check size={14}/> Merge into Memory library</button><button className="export" onClick={exportMemories}><Download size={14}/> Export current library</button></div>
+          {saved>0&&<div className="preview" role="status"><b>{saved} browser memories merged.</b><p>Open Memory Vault or Future Self to continue managing them.</p></div>}
+        </>}
+      </div>
+      <div className="grid" style={{marginTop:24}}><Feature title="No duplicate store" body="The bridge uses the same afterimage:memories:v2 storage key as the main app."/><Feature title="Explicit handoff" body="The extension only sends memories when you press Sync. There is no background transfer."/><Feature title="Portable" body="The same library can be exported as JSON for backup or migration."/></div>
+    </section>
+  </main>;
+}
+
+function Feature({title,body}:{title:string;body:string}) { return <article className="feature"><h3>{title}</h3><p>{body}</p></article>; }
