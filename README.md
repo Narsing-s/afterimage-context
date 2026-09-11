@@ -62,24 +62,21 @@ The project does not claim that no adjacent product exists. The intended differe
 - Explicit signal grant/revoke controls
 - 30-day expiring signal permissions with automatic expiry
 - Local signal preview showing exactly what would influence matching
+- **Memory Health review at `/memory-review`**
 - **Future Self Inbox at `/future-self`**
 - **Decision Memory at `/decisions`**
-- **Live browser extension with contextual resurfacing**
-- **Explainable match confidence and explicit Useful / Not now feedback**
-- **Local extension storage with no remote AI dependency**
-- Memory Health review at `/memory-review`
-- Fresh / familiar / fading / stale memory health
-- Review queue for memories that may no longer be reliable
-- Conflict Radar for potentially competing memories
-- Explicit user confirmation before a memory is treated as changed truth
+- **Live contextual browser resurfacing extension**
+- **Browser → main-app memory bridge at `/extension-bridge`**
+- **One shared `afterimage:memories:v2` browser memory model**
+- **Explicit Useful / Not now resurfacing feedback**
 - No account, ads, feed, streaks, or notification spam
 - GitHub Actions build workflow
 
-### Browser resurfacing
+### Unified browser memory
 
-The `extension/` folder now contains a working Manifest V3 browser layer. A user can save a clue from the current page, attach a return condition, and keep it in `chrome.storage.local`. When a later page has enough explainable text overlap, a small Afterimage card can appear directly on that page.
+The browser extension is now part of the same Afterimage memory system. The extension keeps its own local capture cache so it can work offline, then provides an explicit **Sync with Afterimage app** action. Sync opens the public `/extension-bridge` using a URL fragment, so memory payloads are not placed in the server request URL. The bridge merges memories into the main app's `afterimage:memories:v2` store by ID, preventing duplicate entries.
 
-The extension deliberately avoids silent history collection. Matching is performed locally against the current page, and the user can dismiss or confirm the resurfaced memory. See `docs/BROWSER_EXTENSION.md` for installation and privacy details.
+This is intentionally a user-controlled handoff: there is no background synchronization, browsing-history upload, analytics endpoint, or server-side memory database.
 
 ### Memory Health
 
@@ -103,21 +100,27 @@ Open `http://localhost:3000`.
 Useful routes:
 
 - `/` — capture, simulate, validate, and manage memories
-- `/future-self` — contextual Future Self Inbox
-- `/decisions` — decision capture and outcome memory
+- `/future-self` — Future Self Inbox and resurfacing review
+- `/decisions` — decision history and outcomes
 - `/memory-review` — review memory health and possible conflicts
 - `/context-signals` — manage local context signal permissions
 - `/graph` — explore local memory relationships
+- `/extension-bridge` — explicitly merge browser-extension memories into the main library
 
-### Load the browser extension
+## Browser extension
 
-1. Open Chrome or Edge and go to its extensions page.
+The `extension/` directory contains a Manifest V3 Chrome/Edge extension.
+
+1. Open `chrome://extensions` or `edge://extensions`.
 2. Enable **Developer mode**.
 3. Choose **Load unpacked**.
-4. Select this repository's `extension/` directory.
-5. Open a normal web page and click the Afterimage toolbar icon.
+4. Select the repository's `extension` folder.
+5. Open a normal web page and use the Afterimage extension to save a clue.
+6. Use **Check context** to test local resurfacing.
+7. Use **Sync with Afterimage app** to send the local browser memories to the public bridge.
+8. On `/extension-bridge`, choose **Merge into Memory library**.
 
-The extension is local-first and does not require a server for capture or matching.
+The extension is deliberately least-privilege and user initiated. It does not silently collect browsing history.
 
 ## Build
 
@@ -137,7 +140,7 @@ Start with `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, and `ROADMAP.md`.
 - 🧭 **Context Explorer** — relevance and matching experiments
 - 🔐 **Privacy Engineer** — local-first security and user control
 - 📱 **Android Builder** — offline-first mobile client
-- 🌐 **Browser Builder** — permission-aware browser capture and resurfacing
+- 🌐 **Browser Builder** — permission-aware browser capture
 - 🎨 **Experience Designer** — calm resurfacing interactions
 - 🧪 **Reality Tester** — real-world scenario testing
 
@@ -153,15 +156,15 @@ The production direction is explicit: every future context source must be **opt-
 
 ## Privacy direction
 
-The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and extension memories are stored in `chrome.storage.local`; they are not sent to a server by the current product. Future integrations should keep sensitive context on-device wherever practical.
+The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and are not sent to a server. Future integrations should keep sensitive context on-device wherever practical.
 
-See `ARCHITECTURE.md`, `SECURITY.md`, `docs/PRODUCT_PRINCIPLES.md`, and `docs/BROWSER_EXTENSION.md`.
+See `ARCHITECTURE.md`, `SECURITY.md`, and `docs/PRODUCT_PRINCIPLES.md`.
 
 ## Roadmap
 
 See `ROADMAP.md` for the public roadmap and research questions.
 
-1. ~~Real permission-aware browser extension~~
+1. Real permission-aware browser extension
 2. Calendar integration with explicit permission
 3. Signal history and per-memory sensitivity
 4. Local encrypted memory store
@@ -169,8 +172,6 @@ See `ROADMAP.md` for the public roadmap and research questions.
 6. Android client
 7. Stronger memory conflict / contradiction detection
 8. Optional encrypted synchronization
-9. Extension ↔ web-app portable memory bridge
-10. User-controlled context permission center
 
 ## Community standards
 
