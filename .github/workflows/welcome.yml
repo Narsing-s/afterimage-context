@@ -18,17 +18,20 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const issueOrPr = context.payload.issue || context.payload.pull_request;
-            if (!issueOrPr) return;
+            const item = context.payload.issue || context.payload.pull_request;
+            if (!item) return;
 
-            const author = issueOrPr.user.login;
-            const number = issueOrPr.number;
+            const author = item.user.login;
+            const number = item.number;
             const isPullRequest = Boolean(context.payload.pull_request);
-            const type = isPullRequest ? 'pull request' : 'issue';
 
-            const endpoint = isPullRequest
-              ? `GET /repos/${context.repo.owner}/${context.repo.repo}/issues/${number}/comments`
-              : `GET /repos/${context.repo.owner}/${context.repo.repo}/issues/${number}/comments`;
+            const search = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} author:${author}`,
+              per_page: 20,
+            });
+
+            const previous = search.data.items.filter(existing => existing.number !== number);
+            if (previous.length > 0) return;
 
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
@@ -39,8 +42,8 @@ jobs:
             if (comments.some(comment => comment.user?.type === 'Bot' && comment.body?.includes('Welcome to Afterimage'))) return;
 
             const body = isPullRequest
-              ? `Welcome to Afterimage, @${author}! 🎉\n\nThanks for opening your first ${type}. A maintainer will review it soon.\n\nHelpful links:\n- [Start Here](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/START_HERE.md)\n- [Contributing guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/CONTRIBUTING.md)\n- [Good First Issues](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/GOOD_FIRST_ISSUES.md)\n\nPlease keep the change focused and explain how you tested it. 💚`
-              : `Welcome to Afterimage, @${author}! 👋\n\nThanks for opening your first ${type}. If you are looking to contribute, [Start Here](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/START_HERE.md) has small, beginner-friendly paths into the project.\n\nFor product ideas or questions, you can also use [Discussions](https://github.com/${context.repo.owner}/${context.repo.repo}/discussions).`;
+              ? `Welcome to Afterimage, @${author}! 🎉\n\nThanks for opening your first pull request. A maintainer will review it soon.\n\nHelpful links:\n- [Start Here](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/START_HERE.md)\n- [Contributing guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/CONTRIBUTING.md)\n- [Good First Issues](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/GOOD_FIRST_ISSUES.md)\n\nPlease keep the change focused and explain how you tested it. 💚`
+              : `Welcome to Afterimage, @${author}! 👋\n\nThanks for opening your first issue. If you are looking to contribute, [Start Here](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/START_HERE.md) has small, beginner-friendly paths into the project.\n\nFor product ideas or questions, you can also use [Discussions](https://github.com/${context.repo.owner}/${context.repo.repo}/discussions).`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
