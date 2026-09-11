@@ -1,0 +1,33 @@
+name: Feature idea
+description: Propose a focused improvement to Afterimage
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping shape Afterimage. Keep the proposal focused on a real user problem.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem should we solve?
+      description: Describe the situation where Afterimage is currently not useful enough.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed experience
+      description: What should the user be able to do?
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy and context considerations
+      description: What context is needed, and how can it remain explicit, revocable, and local-first?
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Give a few observable conditions for success.
