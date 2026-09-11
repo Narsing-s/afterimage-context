@@ -1,16 +1,17 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { Check, Plus, Sparkles, Trash2, ArrowLeft } from 'lucide-react';
 
 type Decision = { id:string; decision:string; reason:string; alternatives:string; outcome:string; createdAt:string };
 const KEY='afterimage:decisions:v1';
 
 export default function DecisionsPage(){
- const [items,setItems]=useState<Decision[]>(()=>{try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(x)?x:[]}catch{return []}});
+ const [items,setItems]=useState<Decision[]>([]);
  const [draft,setDraft]=useState({decision:'',reason:'',alternatives:'',outcome:''});
  const [saved,setSaved]=useState(false);
+ useEffect(()=>{try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(x))setItems(x)}catch{}},[]);
  const recent=useMemo(()=>[...items].sort((a,b)=>+new Date(b.createdAt)-+new Date(a.createdAt)),[items]);
  function persist(next:Decision[]){setItems(next);localStorage.setItem(KEY,JSON.stringify(next));}
  function add(){if(!draft.decision.trim()||!draft.reason.trim())return;const d={...draft,id:crypto.randomUUID(),createdAt:new Date().toISOString()};persist([d,...items]);setDraft({decision:'',reason:'',alternatives:'',outcome:''});setSaved(true);setTimeout(()=>setSaved(false),2200)}
