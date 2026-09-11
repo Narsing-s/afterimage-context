@@ -3,8 +3,10 @@ import './nav-ribbon.css';
 import './ui-polish.css';
 import './home-premium.css';
 import './future-product.css';
+import './welcome.css';
 import type { Metadata } from 'next';
 import FutureSelfLauncher from '../components/future-self-launcher';
+import WelcomeGate from '../components/welcome-gate';
 
 export const metadata: Metadata = {
   title: 'Afterimage — Remember what matters when it matters',
@@ -12,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en"><body>{children}<FutureSelfLauncher /></body></html>;
+  return <html lang="en"><body>{children}<WelcomeGate /><FutureSelfLauncher /></body></html>;
 }
