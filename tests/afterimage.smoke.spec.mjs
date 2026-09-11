@@ -5,13 +5,13 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
-  const close = page.getByRole('button', { name: /enter afterimage/i });
-  if (await close.count()) await close.click();
+  const enter = page.getByRole('button', { name: /enter afterimage/i });
+  if (await enter.count()) await enter.click();
 
-  await page.getByPlaceholder(/capture a thought/i).fill('Use Railway for the next small production service because deployment is fast and rollback is simple.');
-  await page.getByPlaceholder(/return condition/i).fill('When I am choosing a simple production hosting platform');
-  await page.getByPlaceholder(/why it matters/i).fill('This avoids repeating the hosting comparison next time.');
-  await page.getByRole('button', { name: /store memory/i }).click();
+  await page.getByLabel('Memory for future you').fill('Use Railway for the next small production service because deployment is fast and rollback is simple.');
+  await page.getByLabel('Return condition').fill('When I am choosing a simple production hosting platform');
+  await page.getByLabel('Why it matters').fill('This avoids repeating the hosting comparison next time.');
+  await page.getByRole('button', { name: /store afterimage/i }).click();
 
   await expect(page.getByText(/memory created/i)).toBeVisible();
   await page.getByRole('button', { name: /test context/i }).click();
