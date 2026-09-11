@@ -5,8 +5,10 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
-  const enter = page.getByRole('button', { name: /enter afterimage/i });
-  if (await enter.count()) await enter.click();
+  const welcome = page.getByRole('dialog');
+  if (await welcome.isVisible().catch(() => false)) {
+    await welcome.getByRole('button', { name: /close welcome message/i }).click();
+  }
 
   await page.getByLabel('Memory for future you').fill('Use Railway for the next small production service because deployment is fast and rollback is simple.');
   await page.getByLabel('Return condition').fill('When I am choosing a simple production hosting platform');
