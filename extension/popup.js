@@ -1,116 +1,12 @@
 const $ = (id) => document.getElementById(id);
-const titleEl = $('title');
-const urlEl = $('url');
-const memoryEl = $('memory');
-const triggerEl = $('trigger');
-const statusEl = $('status');
-const saveBtn = $('save');
-const recallBtn = $('recall');
-const syncBtn = $('sync');
-
+const titleEl = $('title'), urlEl = $('url'), memoryEl = $('memory'), triggerEl = $('trigger'), statusEl = $('status'), saveBtn = $('save'), recallBtn = $('recall'), syncBtn = $('sync');
 let tab = null;
 let pageContext = { title: '', url: '', host: '', text: '', selection: '' };
-
 const tokens = (value) => new Set(String(value || '').toLowerCase().replace(/https?:\/\/|www\./g, ' ').replace(/[^a-z0-9]+/g, ' ').split(/\s+/).filter((word) => word.length >= 4));
-const score = (memory) => {
-  const source = `${pageContext.title} ${pageContext.host} ${pageContext.url} ${pageContext.text}`;
-  const pageTokens = tokens(source);
-  const memoryTokens = tokens(`${memory.text} ${memory.trigger}`);
-  if (!memoryTokens.size) return 0;
-  let hits = 0;
-  memoryTokens.forEach((word) => { if (pageTokens.has(word)) hits += 1; });
-  return hits / memoryTokens.size;
-};
-
-chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-  tab = tabs[0];
-  titleEl.textContent = tab?.title || 'Current page';
-  try { pageContext.host = new URL(tab?.url || '').hostname; } catch { pageContext.host = ''; }
-  pageContext.title = tab?.title || '';
-  pageContext.url = tab?.url || '';
-  urlEl.textContent = pageContext.url;
-  if (tab?.id) {
-    try {
-      const response = await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_GET_CONTEXT' });
-      if (response) {
-        pageContext = { ...pageContext, ...response };
-        if (response.selection && !memoryEl.value) memoryEl.value = `Remember: ${response.selection.slice(0, 420)}`;
-      }
-    } catch {}
-  }
-  refreshStatus();
-});
-
-async function getMemories() {
-  const result = await chrome.storage.local.get({ afterimages: [] });
-  return Array.isArray(result.afterimages) ? result.afterimages : [];
-}
-
-async function refreshStatus() {
-  const memories = await getMemories();
-  const matches = memories.map((memory) => ({ memory, score: score(memory) })).filter((item) => item.score >= 0.22).sort((a, b) => b.score - a.score);
-  statusEl.innerHTML = `${memories.length} local memories · <span class="ok">${matches.length} relevant here</span>`;
-}
-
-saveBtn.addEventListener('click', async () => {
-  const text = memoryEl.value.trim();
-  if (!text) {
-    statusEl.innerHTML = '<span class="err">Add the clue you want future you to remember.</span>';
-    return;
-  }
-  const memories = await getMemories();
-  memories.unshift({
-    id: crypto.randomUUID(),
-    text,
-    trigger: triggerEl.value.trim(),
-    title: pageContext.title,
-    url: pageContext.url,
-    host: pageContext.host,
-    createdAt: new Date().toISOString(),
-    resurfacedCount: 0,
-    dismissed: false,
-    source: 'browser-extension',
-    sourceUrl: pageContext.url
-  });
-  await chrome.storage.local.set({ afterimages: memories.slice(0, 200) });
-  statusEl.innerHTML = '<span class="ok">Saved locally. Future you can meet it again.</span>';
-});
-
-recallBtn.addEventListener('click', async () => {
-  const memories = await getMemories();
-  const matches = memories.map((memory) => ({ memory, score: score(memory) })).filter((item) => item.score >= 0.22).sort((a, b) => b.score - a.score);
-  if (!matches.length) {
-    statusEl.textContent = `${memories.length} local memories · nothing strongly relevant on this page yet.`;
-    return;
-  }
-  const best = matches[0].memory;
-  try {
-    await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_SHOW_MEMORY', memory: best, score: matches[0].score });
-    statusEl.innerHTML = '<span class="ok">Context resurfaced on the page.</span>';
-  } catch {
-    statusEl.textContent = best.text;
-  }
-});
-
-syncBtn.addEventListener('click', async () => {
-  const memories = (await getMemories()).slice(0, 25).map((memory) => ({
-    id: memory.id,
-    text: memory.text,
-    trigger: memory.trigger,
-    createdAt: memory.createdAt,
-    resurfacedCount: memory.resurfacedCount || 0,
-    confidence: memory.confidence ?? 0.7,
-    state: memory.state || 'active',
-    mode: 'signal',
-    source: 'browser-extension',
-    sourceUrl: memory.sourceUrl || memory.url || ''
-  }));
-  if (!memories.length) {
-    statusEl.innerHTML = '<span class="err">There are no browser memories to sync yet.</span>';
-    return;
-  }
-  const payload = encodeURIComponent(JSON.stringify(memories));
-  const bridge = `http://localhost:3000/extension-bridge?memories=${payload}`;
-  chrome.tabs.create({ url: bridge });
-  statusEl.innerHTML = '<span class="ok">Opened the local Afterimage bridge. Press Merge there to import.</span>';
-});
+const score = (memory) => { const source = `${pageContext.title} ${pageContext.host} ${pageContext.url} ${pageContext.text}`; const pageTokens = tokens(source); const memoryTokens = tokens(`${memory.text} ${memory.trigger}`); if (!memoryTokens.size) return 0; let hits = 0; memoryTokens.forEach((word) => { if (pageTokens.has(word)) hits += 1; }); return hits / memoryTokens.size; };
+chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => { tab = tabs[0]; titleEl.textContent = tab?.title || 'Current page'; try { pageContext.host = new URL(tab?.url || '').hostname; } catch { pageContext.host = ''; } pageContext.title = tab?.title || ''; pageContext.url = tab?.url || ''; urlEl.textContent = pageContext.url; if (tab?.id) { try { const response = await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_GET_CONTEXT' }); if (response) { pageContext = { ...pageContext, ...response }; if (response.selection && !memoryEl.value) memoryEl.value = `Remember: ${response.selection.slice(0, 420)}`; } } catch {} } refreshStatus(); });
+async function getMemories() { const result = await chrome.storage.local.get({ afterimages: [] }); return Array.isArray(result.afterimages) ? result.afterimages : []; }
+async function refreshStatus() { const memories = await getMemories(); const matches = memories.map((memory) => ({ memory, score: score(memory) })).filter((item) => item.score >= 0.22).sort((a, b) => b.score - a.score); statusEl.innerHTML = `${memories.length} local memories · <span class="ok">${matches.length} relevant here</span>`; }
+saveBtn.addEventListener('click', async () => { const text = memoryEl.value.trim(); if (!text) { statusEl.innerHTML = '<span class="err">Add the clue you want future you to remember.</span>'; return; } const memories = await getMemories(); memories.unshift({ id: crypto.randomUUID(), text, trigger: triggerEl.value.trim(), title: pageContext.title, url: pageContext.url, host: pageContext.host, createdAt: new Date().toISOString(), resurfacedCount: 0, dismissed: false, source: 'browser-extension', sourceUrl: pageContext.url }); await chrome.storage.local.set({ afterimages: memories.slice(0, 200) }); statusEl.innerHTML = '<span class="ok">Saved locally. Future you can meet it again.</span>'; });
+recallBtn.addEventListener('click', async () => { const memories = await getMemories(); const matches = memories.map((memory) => ({ memory, score: score(memory) })).filter((item) => item.score >= 0.22).sort((a, b) => b.score - a.score); if (!matches.length) { statusEl.textContent = `${memories.length} local memories · nothing strongly relevant on this page yet.`; return; } const best = matches[0].memory; try { await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_SHOW_MEMORY', memory: best, score: matches[0].score }); statusEl.innerHTML = '<span class="ok">Context resurfaced on the page.</span>'; } catch { statusEl.textContent = best.text; } });
+syncBtn.addEventListener('click', async () => { const memories = (await getMemories()).slice(0, 25).map((memory) => ({ id: memory.id, text: memory.text, trigger: memory.trigger, createdAt: memory.createdAt, resurfacedCount: memory.resurfacedCount || 0, confidence: memory.confidence ?? 0.7, state: memory.state || 'active', mode: 'signal', source: 'browser-extension', sourceUrl: memory.sourceUrl || memory.url || '' })); if (!memories.length) { statusEl.innerHTML = '<span class="err">There are no browser memories to sync yet.</span>'; return; } const payload = encodeURIComponent(JSON.stringify(memories)); const appBase = 'https://afterimage-context.vercel.app'; const bridge = `${appBase}/extension-bridge#memories=${payload}`; chrome.tabs.create({ url: bridge }); statusEl.innerHTML = '<span class="ok">Opened the Afterimage bridge. Press Merge there to import.</span>'; });
