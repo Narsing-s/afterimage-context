@@ -59,7 +59,7 @@ export function matchContext(memories: ContextMemory[], currentContext: string, 
     const matchedMemory = memoryTerms.filter(term => current.has(term)), matchedTrigger = triggerTerms.filter(term => current.has(term));
     const memoryPhrases = new Set(phrases(memory.text));
     const phraseMatches = [...memoryPhrases].filter(phrase => currentPhrases.has(phrase));
-    const fuzzyMatches = memoryTerms.filter(term => [...current].some(candidate => term.length >= 5 && candidate.length >= 5 && (term.startsWith(candidate.slice(0, 5)) || candidate.startsWith(term.slice(0, 5)))));
+    const fuzzyMatches = memoryTerms.filter(term => [...current].some(candidate => term.length >= 5 && candidate.length >= 5 && (term.startsWith(candidate.slice(0, 5)) || candidate.startsWith(term.slice(0, 5))));
     const matchedTerms = [...new Set([...matchedTrigger, ...matchedMemory, ...fuzzyMatches])]; if (!matchedTerms.length) return null;
     const memoryOverlap = matchedMemory.length / Math.max(1, memoryTerms.length), triggerOverlap = matchedTrigger.length / Math.max(1, triggerTerms.length);
     const coverage = matchedTerms.length / Math.max(1, Math.min(memoryTerms.length + triggerTerms.length, current.size));
@@ -79,14 +79,14 @@ export function matchContext(memories: ContextMemory[], currentContext: string, 
 export function detectContradictions(memories: ContextMemory[], currentContext: string): ContradictionSignal[] {
   const current = currentContext.toLowerCase();
   const changeWords = ['changed','change','no longer','not anymore','instead','switched','moved','replaced','different','decided against','stopped using','deprecated'];
-  return memories.filter(m => m.state !== 'archived' && m.state !== 'outdated').map(memory => {
+  return memories.filter(m => m.state !== 'archived' && m.state !== 'outdated').flatMap(memory => {
     const memoryText = `${memory.text} ${memory.trigger ?? ''}`.toLowerCase();
     const hits = changeWords.filter(word => current.includes(word) && memoryText.includes(word));
     const overlap = [...new Set(terms(memory.text).filter(t => terms(currentContext).includes(t)))];
-    if (!hits.length || !overlap.length) return null;
+    if (!hits.length || !overlap.length) return [];
     const score = Math.min(1, .45 + hits.length * .12 + overlap.length * .05);
-    return { memory, score, type: 'changed' as const, reason: `The current context signals a change (${hits.slice(0, 2).join(', ')}). Review this memory before relying on it.` };
-  }).filter((x): x is ContradictionSignal => Boolean(x)).sort((a,b) => b.score-a.score);
+    return [{ memory, score, type: 'changed' as const, reason: `The current context signals a change (${hits.slice(0, 2).join(', ')}). Review this memory before relying on it.` }];
+  }).sort((a,b) => b.score-a.score);
 }
 
 export function explainMatch(match: ContextMatch) { return match.reason; }
