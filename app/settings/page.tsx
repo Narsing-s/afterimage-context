@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, Download, RotateCcw, ShieldCheck, Trash2, Undo2 } from 'lucide-react';
+import { ArrowLeft, Check, Download, KeyRound, RotateCcw, ShieldCheck, Trash2, Undo2, Upload } from 'lucide-react';
 import { saveRecovery, restoreRecovery } from '../../lib/recovery';
+import { decryptBackup, encryptBackup } from '../../lib/secure-export';
 
 const MEMORY_KEY = 'afterimage:memories:v2';
 const WELCOME_KEY = 'afterimage:welcome:v1';
@@ -13,6 +14,10 @@ export default function SettingsPage() {
   const [message, setMessage] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
+  const [backupPassword, setBackupPassword] = useState('');
+  const [backupConfirm, setBackupConfirm] = useState('');
+  const [importPassword, setImportPassword] = useState('');
+  const [busy, setBusy] = useState(false);
 
   function replayWelcome() { localStorage.removeItem(WELCOME_KEY); setMessage('Welcome introduction reset. It will appear the next time you open Afterimage.'); }
 
@@ -22,6 +27,43 @@ export default function SettingsPage() {
     const payload = { exportedAt: new Date().toISOString(), memories, signalPreferences: preferences };
     const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
     const a = document.createElement('a'); a.href = url; a.download = 'afterimage-data.json'; a.click(); URL.revokeObjectURL(url); setMessage('Your local Afterimage data was exported.');
+  }
+
+  async function exportEncrypted() {
+    if (backupPassword !== backupConfirm) { setMessage('Backup passwords do not match.'); return; }
+    setBusy(true);
+    try {
+      const memories = JSON.parse(localStorage.getItem(MEMORY_KEY) || '[]');
+      const preferences = JSON.parse(localStorage.getItem(PREF_KEY) || '{}');
+      const encrypted = await encryptBackup({ memories, preferences: { signalPreferences: preferences } }, backupPassword);
+      const url = URL.createObjectURL(new Blob([encrypted], { type: 'application/json' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'afterimage-secure-backup.json'; a.click(); URL.revokeObjectURL(url);
+      setBackupPassword(''); setBackupConfirm(''); setMessage('Encrypted backup created locally. Your password was not stored.');
+    } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to create encrypted backup.'); }
+    finally { setBusy(false); }
+  }
+
+  async function importEncrypted(file: File) {
+    if (!importPassword) { setMessage('Enter the backup password first.'); return; }
+    setBusy(true);
+    try {
+      const raw = await file.text();
+      const backup = await decryptBackup(raw, importPassword);
+      const current = JSON.parse(localStorage.getItem(MEMORY_KEY) || '[]');
+      saveRecovery(current, 'encrypted backup import');
+      const existing = new Map(current.map((memory: { id?: string }) => [memory.id, memory]));
+      for (const memory of backup.memories) {
+        if (memory && typeof memory === 'object') {
+          const item = memory as { id?: string };
+          if (item.id) existing.set(item.id, memory);
+        }
+      }
+      localStorage.setItem(MEMORY_KEY, JSON.stringify([...existing.values()]));
+      const preferences = backup.preferences as { signalPreferences?: unknown } | undefined;
+      if (preferences?.signalPreferences) localStorage.setItem(PREF_KEY, JSON.stringify(preferences.signalPreferences));
+      setImportPassword(''); setMessage(`Encrypted backup restored and merged. ${backup.memories.length} memories were processed.`);
+    } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to import encrypted backup.'); }
+    finally { setBusy(false); }
   }
 
   function clearAll() {
@@ -43,6 +85,8 @@ export default function SettingsPage() {
     <p className="settings-lead">Manage storage, context influence, recovery, and the product introduction without sending your memory to a server.</p>
     <section className="settings-card"><div className="settings-card-icon"><RotateCcw size={18}/></div><div><h2>Replay the introduction</h2><p>See the three-step Afterimage introduction again on this browser.</p></div><button onClick={replayWelcome}><RotateCcw size={14}/> Replay</button></section>
     <section className="settings-card"><div className="settings-card-icon"><Download size={18}/></div><div><h2>Export local data</h2><p>Download your memories and context preferences as portable JSON.</p></div><button onClick={exportData}><Download size={14}/> Export</button></section>
+    <section className="settings-card"><div className="settings-card-icon"><KeyRound size={18}/></div><div><h2>Encrypted backup</h2><p>Create an AES-256-GCM backup in your browser. The password never leaves this device.</p><div className="settings-inline-fields"><input type="password" value={backupPassword} onChange={e=>setBackupPassword(e.target.value)} placeholder="Backup password (8+ chars)" autoComplete="new-password"/><input type="password" value={backupConfirm} onChange={e=>setBackupConfirm(e.target.value)} placeholder="Confirm password" autoComplete="new-password"/></div></div><button disabled={busy||!backupPassword||!backupConfirm} onClick={exportEncrypted}><Download size={14}/> Secure export</button></section>
+    <section className="settings-card"><div className="settings-card-icon"><Upload size={18}/></div><div><h2>Restore encrypted backup</h2><p>Import and merge a secure backup. A recovery snapshot is created before changes.</p><div className="settings-inline-fields"><input type="password" value={importPassword} onChange={e=>setImportPassword(e.target.value)} placeholder="Backup password" autoComplete="off"/><input type="file" accept="application/json,.json" disabled={busy} onChange={e=>{const file=e.target.files?.[0]; if(file) void importEncrypted(file); e.currentTarget.value='';}}/></div></div><span className="settings-status"><ShieldCheck size={13}/> Local</span></section>
     <section className="settings-card"><div className="settings-card-icon"><Undo2 size={18}/></div><div><h2>Recovery</h2><p>Destructive library clearing creates one local recovery snapshot before removal.</p></div>{canUndo&&<button onClick={undoClear}><Undo2 size={14}/> Undo clear</button>}</section>
     <section className="settings-card privacy-card"><div className="settings-card-icon"><ShieldCheck size={18}/></div><div><h2>Local-first privacy</h2><p>Memories and signal preferences remain in this browser. No account, advertising profile, or silent browsing-history upload.</p></div><span className="settings-status"><Check size={13}/> Local</span></section>
     <section className="settings-danger"><div><h2>Delete local memory</h2><p>A recoverable snapshot is created before this browser's memory library and context preferences are removed.</p></div>{!confirmClear?<button onClick={()=>setConfirmClear(true)}><Trash2 size={14}/> Delete everything</button>:<div className="settings-confirm"><span>Delete all local data?</span><button onClick={clearAll}>Yes, delete</button><button onClick={()=>setConfirmClear(false)}>Cancel</button></div>}</section>
