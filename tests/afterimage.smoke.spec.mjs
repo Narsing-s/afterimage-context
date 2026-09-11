@@ -5,6 +5,7 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
   await page.evaluate(() => {
     localStorage.clear();
     localStorage.setItem('afterimage:welcome:v1', 'seen');
+    localStorage.setItem('afterimage:first-memory-guide:v1', 'dismissed');
   });
   await page.reload();
 
