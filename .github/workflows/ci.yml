@@ -32,6 +32,8 @@ jobs:
         run: node scripts/afterimage-memory-format-check.mjs
       - name: Check memory health rules
         run: node scripts/afterimage-memory-health-check.mjs
+      - name: Check memory intelligence rules
+        run: node scripts/afterimage-memory-intelligence-check.mjs
 
   e2e:
     runs-on: ubuntu-latest
