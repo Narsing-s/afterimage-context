@@ -26,6 +26,8 @@ jobs:
         run: node scripts/afterimage-evaluate.mjs
       - name: Check local storage contract
         run: node scripts/afterimage-storage-check.mjs
+      - name: Check memory quality rules
+        run: node scripts/afterimage-memory-quality.mjs
 
   e2e:
     runs-on: ubuntu-latest
