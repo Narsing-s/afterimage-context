@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, ArrowLeft, Archive, Check, Clock3, RefreshCw, Sparkles, X } from 'lucide-react';
-import { detectContradictions, ContextMemory } from '../../lib/context-engine';
+import { detectContradictions, ContextMemory, type MemoryState } from '../../lib/context-engine';
 import { healthReview, memoryHealth } from '../../lib/memory-health';
 import { memoryTimeline } from '../../lib/memory-timeline';
 
@@ -24,7 +24,7 @@ export default function FutureSelf(){
  const recent=useMemo(()=>[...active].sort((a,b)=>priority(b)-priority(a)).slice(0,6),[active]);
  const timeline=useMemo(()=>memoryTimeline(memories),[memories]);
  function save(next:Memory[]){setMemories(next);localStorage.setItem(KEY,JSON.stringify(next));}
- function act(id:string,state:string){save(memories.map(m=>m.id===id?{...m,state}:m));setSelected(null);setToast(state==='confirmed'?'Memory confirmed for future you.':state==='outdated'?'Memory marked as no longer true.':'Memory archived quietly.');setTimeout(()=>setToast(''),2600)}
+ function act(id:string,state:MemoryState){save(memories.map(m=>m.id===id?{...m,state}:m));setSelected(null);setToast(state==='confirmed'?'Memory confirmed for future you.':state==='outdated'?'Memory marked as no longer true.':'Memory archived quietly.');setTimeout(()=>setToast(''),2600)}
  return <main className="future-page">
   <nav className="graph-nav"><Link href="/" className="graph-back"><ArrowLeft size={14}/> Back to Afterimage</Link><span className="future-nav-mark"><Sparkles size={13}/> FUTURE SELF</span></nav>
   <section className="future-hero"><div className="section-kicker">THE MEMORY LAYER FOR YOUR FUTURE SELF</div><h1>What does future-you<br/><em>need to remember?</em></h1><p>Afterimage keeps the important reasons behind your decisions close — without forcing you to schedule a reminder. Review what is still useful, what is fading, and what may have changed.</p><div className="future-actions"><Link className="future-primary" href="/#memories">+ Leave an afterimage</Link><Link className="future-secondary" href="/memory-review">Review memory health</Link></div></section>
@@ -39,4 +39,3 @@ export default function FutureSelf(){
   <section className="future-section future-explainer"><div><div className="section-kicker">THE PROMISE</div><h2>Not another reminder.</h2><p>A reminder says <i>when</i>. A note says <i>where</i>. Afterimage is designed around <strong>when this becomes relevant again</strong>.</p></div><div className="future-flow"><span>MEMORY</span><b>→</b><span>RETURN CONDITION</span><b>→</b><span>CONTEXT</span><b>→</b><span>RELEVANCE</span><b>→</b><span>FEEDBACK</span></div></section>
   {selected&&<div className="inspector-backdrop" onClick={()=>setSelected(null)}><aside className="inspector" onClick={e=>e.stopPropagation()}><button className="inspector-close" onClick={()=>setSelected(null)}><X size={16}/></button><div className="section-kicker">FUTURE SELF REVIEW</div><h3>Is this still true?</h3><p className="inspector-memory">“{selected.text}”</p>{selected.trigger&&<div className="inspect-row"><span>RETURN CONDITION</span><b>{selected.trigger}</b></div>}{selected.why&&<div className="inspect-row"><span>WHY IT MATTERS</span><b>{selected.why}</b></div>}<div className="inspect-row"><span>MEMORY HEALTH</span><b>{memoryHealth(selected).health.toUpperCase()} · {Math.round(memoryHealth(selected).score*100)}%</b></div><button className="inspector-action" onClick={()=>act(selected.id,'confirmed')}><Check size={14}/> Yes — keep this memory</button><button className="inspector-action" onClick={()=>act(selected.id,'outdated')}><X size={14}/> No — this changed</button><button className="inspector-action" onClick={()=>setSelected(null)}>Not sure yet</button></aside></div>}
  </main>
-}
