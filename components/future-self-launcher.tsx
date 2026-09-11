@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Settings2, Sparkles } from 'lucide-react';
 
 type Memory = { id:string; text:string; trigger?:string; why?:string; state?:string; confidence?:number; createdAt:string; resurfacedCount?:number };
 const KEY = 'afterimage:memories:v2';
@@ -18,11 +18,12 @@ export default function FutureSelfLauncher() {
     } catch { setCount(0); }
   }, []);
 
-  return (
+  return <div className="future-launcher-wrap">
     <Link className="future-launcher" href="/future-self" aria-label="Open Future Self inbox">
       <span className="future-launcher-icon"><Sparkles size={14}/></span>
       <span><b>Future Self</b><small>{count} active {count === 1 ? 'memory' : 'memories'}</small></span>
       <ArrowUpRight size={15}/>
     </Link>
-  );
+    <Link className="future-settings" href="/settings" aria-label="Open Afterimage settings"><Settings2 size={15}/><span>Settings</span></Link>
+  </div>;
 }
