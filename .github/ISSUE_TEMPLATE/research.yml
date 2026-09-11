@@ -1,0 +1,29 @@
+name: Research experiment
+description: Propose a small experiment around context, relevance, or memory behavior
+labels:
+  - research
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research question
+      description: What are we trying to learn?
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+      description: What do you expect to happen and why?
+  - type: textarea
+    id: experiment
+    attributes:
+      label: Small experiment
+      description: Describe the smallest test that could produce useful evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy boundary
+      description: Keep personal context local and avoid unnecessary collection.
