@@ -14,96 +14,52 @@ You leave a small piece of knowledge today and attach it to a return condition. 
 memory → return condition → context → relevance → feedback → resurfacing
 ```
 
-### A simple example
-
-**Today**
-
-> I chose this hosting plan because migrating later would be more painful than paying a little extra.
-
-**Return condition**
-
-> When I compare hosting again.
-
-**Months later**
-
-You're comparing hosting again.
-
-**Afterimage**
-
-> You considered this before. You chose the other option because switching costs mattered more. Still true?
-
-That's the experiment.
-
-## Why it is different
-
-A reminder is attached to a **time**.
-
-A note is attached to **storage**.
-
-A task is attached to **action**.
-
-Afterimage is designed around **relevance**.
-
-The project does not claim that no adjacent product exists. The intended differentiation is the product primitive: **a memory is attached to a return condition and contextual relevance rather than only a scheduled date.**
-
 ## Current MVP — v0.9
 
 - Premium responsive dark interface
 - Explicit return-condition capture
 - Context signal and pattern trigger modes
 - Adaptive memory lifecycle: active, confirmed, outdated, archived, snoozed
-- Confidence and resurfacing history
+- Confidence, resurfacing history and per-memory sensitivity
 - Local context graph and relationship explorer at `/graph`
 - Search/filtering across local memories
-- Local JSON export and schema-checked import
+- Schema-checked JSON import/export
+- **Portable, versioned `afterimage.memory.v1` bundles**
 - **Encrypted local backup with AES-256-GCM + PBKDF2-SHA-256**
 - **Recovery snapshots before destructive memory operations**
-- Configurable context sensitivity
 - Privacy-first Context Signals center at `/context-signals`
 - Browser-category, calendar-topic and manual/topic signal prototypes
-- Explicit signal grant/revoke controls
-- 30-day expiring signal permissions with automatic expiry
+- Explicit signal grant/revoke controls with 30-day expiry
+- **Local signal history for permission changes and expiry**
 - Local signal preview showing exactly what would influence matching
-- **Curated context vocabulary matching for common equivalent terms**
-- **Memory Health review at `/memory-review`**
-- **Future Self Inbox at `/future-self`**
-- **Decision Memory at `/decisions`**
-- **Live contextual browser resurfacing extension**
-- **Browser → main-app memory bridge at `/extension-bridge`**
-- **One shared `afterimage:memories:v2` browser memory model**
-- **Explicit Useful / Not now resurfacing feedback**
-- **Deterministic relevance evaluation harness with CI gating**
-- **Playwright Chromium browser smoke testing in CI**
-- No account, ads, feed, streaks, or notification spam
-- GitHub Actions build + evaluation + browser verification workflows
+- Curated context vocabulary matching
+- Memory Health, Conflict Radar and Future Self Inbox
+- Decision Memory
+- Live contextual browser extension + explicit browser bridge
+- One shared `afterimage:memories:v2` browser memory model
+- Deterministic relevance and portable-format validation in CI
+- Playwright Chromium browser smoke testing in CI
+- No account, ads, feed, streaks, notification spam or silent browsing surveillance
 
-### Unified browser memory
+## Portable Memory Format v1
 
-The browser extension is now part of the same Afterimage memory system. The extension keeps its own local capture cache so it can work offline, then provides an explicit **Sync with Afterimage app** action. Sync opens the public `/extension-bridge` using a URL fragment, so memory payloads are not placed in the server request URL. The bridge merges memories into the main app's `afterimage:memories:v2` store by ID, preventing duplicate entries.
+Afterimage now has a small versioned interchange format: `afterimage.memory.v1`.
 
-This is intentionally a user-controlled handoff: there is no background synchronization, browsing-history upload, analytics endpoint, or server-side memory database.
+A bundle contains an export timestamp and validated memory records, including return conditions, confidence, lifecycle state, sensitivity and resurfacing history. `/context-signals` provides **Export Memory v1** and **Import Memory v1**. Legacy memory arrays remain importable, while malformed records are rejected locally.
 
-### Memory Health
+This is intentionally a file format, not a cloud-sync protocol. It makes future desktop, Android, browser and other clients able to exchange memories without coupling them to the current `localStorage` implementation.
 
-Memories are not permanent truth. Afterimage can now identify memories that are fresh, familiar, fading, or stale based on age, confidence, and resurfacing history. The `/memory-review` screen gives the user a calm review queue instead of silently rewriting old context.
+## Signal history
 
-### Conflict Radar
+Context permissions now leave a small local audit trail. Afterimage records only permission events—grant, revoke and expiry—with the signal label/value and timestamp. It does **not** record browsing history, calendar events, location trails or raw app activity.
 
-Two memories can both be useful while pointing in different directions. The Conflict Radar highlights possible competing memories that share meaningful context and lets the user decide which one is still true. It is intentionally conservative: a possible conflict is a prompt for review, not an automatic merge or deletion.
+The history is bounded locally to 200 events and is shown in `/context-signals`, so users can understand what context has been allowed over time.
 
-### Explainable context vocabulary
+## Explainable matching
 
-The local matcher remains intentionally transparent. A small curated vocabulary maps common variants such as `db` → `database`, `buying` → `purchase`, and `deployment` → `deploy`. This improves contextual recall without a remote model, hidden embeddings, or server-side processing. The matcher is still **not** marketed as semantic AI.
+The local matcher remains deterministic and inspectable. Curated vocabulary groups improve recall without remote embeddings or server-side processing. Per-memory sensitivity can make individual memories quieter or more eager than the global setting.
 
-## Evaluation
-
-The project includes a dependency-free synthetic evaluation harness:
-
-```bash
-node scripts/afterimage-evaluate.mjs
-```
-
-It tests relevant and unrelated scenarios using the same explainable lexical baseline plus curated context vocabulary. It runs automatically in CI. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and the roadmap toward a larger versioned benchmark.
+Change/contradiction signals are conservative prompts for review rather than automatic deletion or rewriting.
 
 ## Run locally
 
@@ -119,33 +75,16 @@ Useful routes:
 - `/` — capture, simulate, validate, and manage memories
 - `/future-self` — Future Self Inbox and resurfacing review
 - `/decisions` — decision history and outcomes
-- `/memory-review` — review memory health and possible conflicts
-- `/context-signals` — manage local context signal permissions
-- `/graph` — explore local memory relationships
-- `/extension-bridge` — explicitly merge browser-extension memories into the main library
-- `/settings` — control center, recovery, export, and encrypted backup
-- `/memory-vault` — edit, quiet, archive, import, export, and forget memories
+- `/memory-review` — memory health and possible conflicts
+- `/context-signals` — permissions, signal history and portable Memory v1
+- `/graph` — local memory relationships
+- `/extension-bridge` — explicit browser-memory merge
+- `/settings` — recovery, export and encrypted backup
+- `/memory-vault` — edit, sensitivity, quiet, archive, import, export and forget
 
-## Browser extension
+## Privacy direction
 
-The `extension/` directory contains a Manifest V3 Chrome/Edge extension.
-
-1. Open `chrome://extensions` or `edge://extensions`.
-2. Enable **Developer mode**.
-3. Choose **Load unpacked**.
-4. Select the repository's `extension` folder.
-5. Open a normal web page and use the Afterimage extension to save a clue.
-6. Use **Check context** to test local resurfacing.
-7. Use **Sync with Afterimage app** to send the local browser memories to the public bridge.
-8. On `/extension-bridge`, choose **Merge into Memory library**.
-
-The extension is deliberately least-privilege and user initiated. It does not silently collect browsing history.
-
-## Encrypted backup
-
-From `/settings`, users can create an encrypted backup with a local password. The password never leaves the browser and is never stored by Afterimage. Restoring a backup authenticates and decrypts locally, validates the memory payload, creates a recovery snapshot, and merges records by ID.
-
-See [`docs/RECOVERY_AND_PRIVACY.md`](docs/RECOVERY_AND_PRIVACY.md) for the security boundary.
+The MVP is local-first. Captured memories, preferences, signal history and portable import/export remain in the browser unless the user explicitly moves a file or uses an integration. Future context sources should remain **opt-in, explainable, revocable, expiring, privacy-preserving and locally processed wherever practical**.
 
 ## Build
 
@@ -155,72 +94,7 @@ npm run build
 
 ## Open-source project
 
-Afterimage is being built in public. We want contributors interested in context, memory, privacy, human-computer interaction, and calm software.
-
-### Contribute in 10 minutes
-
-You do **not** need to understand the entire codebase before contributing.
-
-1. Read [`START_HERE.md`](START_HERE.md).
-2. Pick an issue labeled **good first issue**.
-3. Make one focused change.
-4. Run `npm run build`.
-5. Open a pull request with what changed and how you tested it.
-
-Current starter missions include keyboard accessibility, local memory tests, clearer “Why now?” explanations, Chrome/Edge compatibility, mobile polish, evaluation scenarios, and a short contributor demo.
-
-Useful contributor paths:
-
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — workflow and design principles
-- [`GOOD_FIRST_ISSUES.md`](GOOD_FIRST_ISSUES.md) — starter missions
-- [`COMMUNITY.md`](COMMUNITY.md) — community expectations
-- [`START_HERE.md`](START_HERE.md) — fastest route into the project
-- [`ROADMAP.md`](ROADMAP.md) — product direction
-- [`docs/EVALUATION.md`](docs/EVALUATION.md) — quality methodology
-- [`docs/RECOVERY_AND_PRIVACY.md`](docs/RECOVERY_AND_PRIVACY.md) — storage and backup boundary
-
-### Contributor missions
-
-- 🧠 **Memory Engineer** — memory model and storage
-- 🧭 **Context Explorer** — relevance and matching experiments
-- 🔐 **Privacy Engineer** — local-first security and user control
-- 📱 **Android Builder** — offline-first mobile client
-- 🌐 **Browser Builder** — permission-aware browser capture
-- 🎨 **Experience Designer** — calm resurfacing interactions
-- 🧪 **Reality Tester** — real-world scenario testing
-
-## Context Signals
-
-Context signals are deliberately opt-in. The current prototype does **not** silently read browser history, calendar data, location, or apps.
-
-The Context Signals center lets users grant or revoke prototype signal categories, preview the composed context, tune matching sensitivity, and import portable memories. A granted signal automatically expires after 30 days and can be revoked earlier. Expired signals are excluded from matching.
-
-The browser integration uses least-privilege, user-initiated capture rather than background surveillance. Calendar integration will likewise require explicit account permission before reading any event context.
-
-The production direction is explicit: every future context source must be **opt-in, explainable, revocable, expiring, privacy-preserving, and locally processed wherever practical**.
-
-## Privacy direction
-
-The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and are not sent to a server. Future integrations should keep sensitive context on-device wherever practical.
-
-See `ARCHITECTURE.md`, `SECURITY.md`, `docs/PRODUCT_PRINCIPLES.md`, and `docs/RECOVERY_AND_PRIVACY.md`.
-
-## Roadmap
-
-See `ROADMAP.md` for the public roadmap and research questions.
-
-1. Real permission-aware browser extension
-2. Calendar integration with explicit permission
-3. Signal history and per-memory sensitivity
-4. Local encrypted memory store
-5. On-device semantic matching option
-6. Android client
-7. Stronger memory conflict / contradiction detection
-8. Optional encrypted synchronization
-
-## Community standards
-
-Please read `CODE_OF_CONDUCT.md` before participating.
+Afterimage is being built in public. See `START_HERE.md`, `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, `ROADMAP.md`, `SECURITY.md` and `docs/RECOVERY_AND_PRIVACY.md` for contributor and product guidance.
 
 ## License
 
