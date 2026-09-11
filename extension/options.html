@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Afterimage Extension Settings</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#090a0c;color:#f4f1e9;font:15px system-ui,-apple-system,sans-serif;padding:48px 20px}.wrap{max-width:680px;margin:auto}.eyebrow{font-size:11px;color:#d7ff62;font-weight:800;letter-spacing:.16em}h1{font-size:32px;margin:8px 0}p{color:#9a9da5;line-height:1.55}.card{margin-top:28px;border:1px solid #262930;border-radius:18px;background:#111318;padding:24px}label{display:block;color:#9a9da5;font-size:12px;margin-bottom:7px}input{width:100%;border:1px solid #2a2e37;border-radius:11px;background:#0d0f13;color:#f4f1e9;padding:12px;font:inherit;outline:none}input:focus{border-color:#7d9140}button{border:0;border-radius:11px;background:#d7ff62;color:#090a0c;padding:12px 18px;margin-top:14px;font-weight:850;cursor:pointer}.secondary{background:#171a20;color:#f4f1e9;border:1px solid #2a2e37;margin-left:8px}.status{min-height:20px;color:#d7ff62;margin-top:12px;font-size:13px}.hint{font-size:12px;color:#626873;margin-top:16px}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="eyebrow">AFTERIMAGE / EXTENSION SETTINGS</div>
+<h1>Choose where Afterimage lives.</h1>
+<p>The extension keeps memories on this device. This setting only controls the destination opened when you explicitly sync browser memories into the Afterimage app.</p>
+<section class="card">
+<label for="appUrl">Afterimage app URL</label>
+<input id="appUrl" type="url" spellcheck="false" placeholder="https://afterimage-context.vercel.app">
+<button id="save">Save settings</button><button id="reset" class="secondary">Use default</button>
+<div id="status" class="status"></div>
+<div class="hint">No browsing history is uploaded. Sync remains a user-triggered handoff.</div>
+</section>
+</main>
+<script src="options.js"></script>
+</body>
+</html>
