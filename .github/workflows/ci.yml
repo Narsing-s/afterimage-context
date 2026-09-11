@@ -24,3 +24,5 @@ jobs:
           node-version: 22
       - name: Evaluate contextual relevance
         run: node scripts/afterimage-evaluate.mjs
+      - name: Check local storage contract
+        run: node scripts/afterimage-storage-check.mjs
