@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Archive, Check, Clock3, Download, Pencil, RotateCcw, Trash2, Upload, X } from 'lucide-react';
 import { ContextMemory, MemoryState, snoozeMemory } from '../../lib/context-engine';
+import { saveRecovery } from '../../lib/recovery';
 
 type Memory = ContextMemory;
 const STORAGE_KEY = 'afterimage:memories:v2';
@@ -48,8 +49,9 @@ export default function MemoryVault() {
   }
 
   function forgetForever(id: string) {
+    saveRecovery(memories, 'forget memory');
     save(memories.filter(m => m.id !== id));
-    setMessage('Memory forgotten forever on this device.');
+    setMessage('Memory forgotten on this device. A local recovery snapshot was created.');
   }
 
   function snooze(id: string) {
@@ -58,7 +60,9 @@ export default function MemoryVault() {
   }
 
   function archive(id: string) {
+    saveRecovery(memories, 'archive or restore memory');
     save(memories.map(m => m.id === id ? { ...m, state: (m.state === 'archived' ? 'active' : 'archived') as MemoryState } : m));
+    setMessage('Memory state changed. A local recovery snapshot was created.');
   }
 
   function exportAll() {
@@ -77,8 +81,9 @@ export default function MemoryVault() {
       if (!valid.length && parsed.length) throw new Error('No valid memories were found.');
       const byId = new Map(memories.map(m => [m.id, m]));
       valid.forEach(m => byId.set(m.id, m));
+      saveRecovery(memories, 'memory vault import');
       save([...byId.values()].slice(0, 100));
-      setMessage(`Imported ${valid.length} valid memor${valid.length === 1 ? 'y' : 'ies'}; duplicates were merged by ID.`);
+      setMessage(`Imported ${valid.length} valid memor${valid.length === 1 ? 'y' : 'ies'}; duplicates were merged by ID. A local recovery snapshot was created.`);
     } catch (e) { setMessage(e instanceof Error ? e.message : 'Import failed.'); }
   }
 
