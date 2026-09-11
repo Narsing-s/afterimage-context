@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, ArrowLeft, Check, Clock3, RefreshCw, ShieldCheck, Sparkles, X } from 'lucide-react';
 import type { ContextMemory } from '../../lib/context-engine';
+import { healthReview, memoryHealth } from '../../lib/memory-health';
 
 const KEY = 'afterimage:memories:v2';
 
@@ -11,16 +12,9 @@ type Health = 'fresh' | 'familiar' | 'fading' | 'stale';
 
 function ageDays(memory: ContextMemory) {
   const base = memory.resurfacedAt || memory.createdAt;
-  return Math.max(0, Math.floor((Date.now() - new Date(base).getTime()) / 86400000));
-}
-
-function health(memory: ContextMemory): Health {
-  const days = ageDays(memory);
-  const confidence = memory.confidence ?? 0.7;
-  if (memory.state === 'outdated' || memory.state === 'archived' || days > 365 || confidence < 0.42) return 'stale';
-  if (days > 180 || confidence < 0.58) return 'fading';
-  if (days > 45 || confidence < 0.76) return 'familiar';
-  return 'fresh';
+  const time = new Date(base).getTime();
+  if (!Number.isFinite(time)) return 0;
+  return Math.max(0, Math.floor((Date.now() - time) / 86400000));
 }
 
 function terms(text: string) {
@@ -38,6 +32,13 @@ function conflicts(memories: ContextMemory[]) {
   }
   return result.slice(0, 8);
 }
+
+const healthLabel: Record<Health, string> = {
+  fresh: 'Fresh',
+  familiar: 'Familiar',
+  fading: 'Fading',
+  stale: 'Stale',
+};
 
 export default function MemoryReview() {
   const [memories, setMemories] = useState<ContextMemory[]>([]);
@@ -60,14 +61,16 @@ export default function MemoryReview() {
     if (selected?.id === id) setSelected({ ...selected, ...patch });
   }
 
+  const healthItems = useMemo(() => healthReview(memories), [memories]);
   const healthCounts = useMemo(() => ({
-    fresh: memories.filter(m => health(m) === 'fresh').length,
-    familiar: memories.filter(m => health(m) === 'familiar').length,
-    fading: memories.filter(m => health(m) === 'fading').length,
-    stale: memories.filter(m => health(m) === 'stale').length,
-  }), [memories]);
+    fresh: healthItems.filter(item => item.health === 'fresh').length,
+    familiar: healthItems.filter(item => item.health === 'familiar').length,
+    fading: healthItems.filter(item => item.health === 'fading').length,
+    stale: healthItems.filter(item => item.health === 'stale').length,
+  }), [healthItems]);
   const conflictsFound = useMemo(() => conflicts(memories.filter(m => m.state !== 'archived')), [memories]);
-  const needsReview = memories.filter(m => health(m) === 'fading' || health(m) === 'stale');
+  const needsReview = useMemo(() => healthItems.filter(item => item.health === 'fading' || item.health === 'stale'), [healthItems]);
+  const weakest = healthItems[0];
 
   return <main className="graph-page">
     <nav className="graph-nav"><Link className="graph-back" href="/"><ArrowLeft size={14}/> BACK TO AFTERIMAGE</Link><div className="brand"><span className="mark"><Sparkles size={15}/></span> MEMORY REVIEW</div></nav>
@@ -75,19 +78,30 @@ export default function MemoryReview() {
 
     <section className="graph-stats">
       <div><span>FRESH</span><b>{healthCounts.fresh}</b></div>
+      <div><span>FAMILIAR</span><b>{healthCounts.familiar}</b></div>
       <div><span>FADING</span><b>{healthCounts.fading}</b></div>
       <div><span>STALE</span><b>{healthCounts.stale}</b></div>
     </section>
 
-    {needsReview.length > 0 && <section className="graph-board">
+    {weakest && <section className="graph-board" style={{ marginTop: 18 }}>
+      <div className="graph-board-head"><div><span>HEALTH SIGNAL</span><p>Your least-supported active memory is surfaced first.</p></div><RefreshCw size={16}/></div>
+      <article className="memory">
+        <span>{healthLabel[weakest.health].toUpperCase()} · {Math.round(weakest.score * 100)}% HEALTH · {Math.round((weakest.memory.confidence ?? .7) * 100)}% CONFIDENCE</span>
+        <p>{weakest.memory.text}</p>
+        <small>{weakest.reason}</small>
+        <div className="memory-actions"><button onClick={() => setSelected(weakest.memory)}><Check size={13}/> Review memory</button></div>
+      </article>
+    </section>}
+
+    {needsReview.length > 0 && <section className="graph-board" style={{ marginTop: 18 }}>
       <div className="graph-board-head"><div><span>REVIEW QUEUE</span><p>These memories may no longer be reliable.</p></div><RefreshCw size={16}/></div>
-      <div className="memory-list">{needsReview.map(memory => <article className="memory" key={memory.id}>
-        <span>{health(memory).toUpperCase()} · {Math.round((memory.confidence ?? .7) * 100)}% CONFIDENCE</span>
+      <div className="memory-list">{needsReview.map(item => { const memory = item.memory; return <article className="memory" key={memory.id}>
+        <span>{healthLabel[item.health].toUpperCase()} · {Math.round(item.score * 100)}% HEALTH · {Math.round((memory.confidence ?? .7) * 100)}% CONFIDENCE</span>
         <p>{memory.text}</p>
         {memory.trigger && <small>Returns when: {memory.trigger}</small>}
-        <small>Last surfaced {ageDays(memory)} days ago</small>
+        <small>{item.reason} Last surfaced {ageDays(memory)} days ago.</small>
         <div className="memory-actions"><button onClick={() => update(memory.id, { state: 'confirmed', confidence: Math.min(1, (memory.confidence ?? .7) + .12), resurfacedAt: new Date().toISOString() })}><Check size={13}/> Still true</button><button onClick={() => update(memory.id, { state: 'outdated', confidence: Math.max(0.1, (memory.confidence ?? .7) - .2) })}><X size={13}/> No longer true</button></div>
-      </article>)}</div>
+      </article>; })}</div>
     </section>}
 
     <section className="graph-board" style={{ marginTop: 18 }}>
@@ -97,6 +111,6 @@ export default function MemoryReview() {
 
     <section className="why"><div className="section-kicker">THE RULE</div><h2>Never silently rewrite the past.</h2><div className="grid"><article className="feature"><div className="feature-icon"><ShieldCheck/></div><h3>User decides</h3><p>Afterimage can identify a possible conflict, but it never decides which memory is true for you.</p></article><article className="feature"><div className="feature-icon"><Clock3/></div><h3>Memory can fade</h3><p>Old or repeatedly unconfirmed memories become less trusted instead of being treated as permanent truth.</p></article><article className="feature"><div className="feature-icon"><Sparkles/></div><h3>Context stays local</h3><p>This review uses the same local memory store as the MVP. No server account is required.</p></article></div></section>
 
-    {selected && <div className="inspector-backdrop" onClick={() => setSelected(null)}><aside className="inspector" onClick={e => e.stopPropagation()}><button className="inspector-close" onClick={() => setSelected(null)}><X size={16}/></button><div className="section-kicker">MEMORY REVIEW</div><h3>Does this still describe you?</h3><p className="inspector-memory">“{selected.text}”</p><div className="inspect-row"><span>HEALTH</span><b>{health(selected).toUpperCase()}</b></div><div className="inspect-row"><span>CONFIDENCE</span><b>{Math.round((selected.confidence ?? .7) * 100)}%</b></div><button className="inspector-action" onClick={() => { update(selected.id, { state: 'confirmed', confidence: Math.min(1, (selected.confidence ?? .7) + .12), resurfacedAt: new Date().toISOString() }); setSelected(null); }}><Check size={15}/> Yes, keep this true</button><button className="inspector-action danger" onClick={() => { update(selected.id, { state: 'outdated', confidence: Math.max(0.1, (selected.confidence ?? .7) - .2) }); setSelected(null); }}><X size={15}/> No longer true</button></aside></div>}
+    {selected && <div className="inspector-backdrop" onClick={() => setSelected(null)}><aside className="inspector" onClick={e => e.stopPropagation()}><button className="inspector-close" onClick={() => setSelected(null)}><X size={16}/></button><div className="section-kicker">MEMORY REVIEW</div><h3>Does this still describe you?</h3><p className="inspector-memory">“{selected.text}”</p><div className="inspect-row"><span>HEALTH</span><b>{healthLabel[memoryHealth(selected).health].toUpperCase()}</b></div><div className="inspect-row"><span>HEALTH SCORE</span><b>{Math.round(memoryHealth(selected).score * 100)}%</b></div><div className="inspect-row"><span>CONFIDENCE</span><b>{Math.round((selected.confidence ?? .7) * 100)}%</b></div><button className="inspector-action" onClick={() => { update(selected.id, { state: 'confirmed', confidence: Math.min(1, (selected.confidence ?? .7) + .12), resurfacedAt: new Date().toISOString() }); setSelected(null); }}><Check size={15}/> Yes, keep this true</button><button className="inspector-action danger" onClick={() => { update(selected.id, { state: 'outdated', confidence: Math.max(0.1, (selected.confidence ?? .7) - .2) }); setSelected(null); }}><X size={15}/> No longer true</button></aside></div>}
   </main>;
 }
