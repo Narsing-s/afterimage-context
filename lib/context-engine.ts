@@ -19,7 +19,28 @@ export type ContextMatch = { memory: ContextMemory; score: number; reason: strin
 export type MatchOptions = { sensitivity?: number };
 
 const STOP_WORDS = new Set(['the','and','that','this','with','from','have','your','you','for','are','was','were','when','what','why','how','into','just','again','about','then','than','still','next','last','today','tomorrow','because','already','another','keep','keeps','i','a','an','to','of','in','on','is','it','my','me','we','our','should','show','remind','remember','again']);
-function terms(text: string) { return [...new Set((text.toLowerCase().match(/[a-z0-9₹]+/g) ?? []).filter(t => t.length > 2 && !STOP_WORDS.has(t)))]; }
+
+// Small, curated concept groups improve recall without a remote model or hidden
+// semantic inference. Every expansion is deterministic and inspectable.
+const CONCEPT_GROUPS: Record<string, string[]> = {
+  deploy: ['deploy','deployment','deployed','release','releases'],
+  hosting: ['host','hosting','hosted'],
+  database: ['database','databases','db','datastore'],
+  purchase: ['buy','buying','bought','purchase','purchasing','shopping','shop'],
+  travel: ['travel','trip','trips','vacation','journey'],
+  api: ['api','apis','endpoint','endpoints'],
+  credential: ['credential','credentials','password','passwords','secret','secrets'],
+  incident: ['incident','incidents','outage','outages','downtime','production','prod'],
+};
+const CONCEPT_BY_TERM = new Map<string, string>();
+for (const [concept, variants] of Object.entries(CONCEPT_GROUPS)) for (const variant of variants) CONCEPT_BY_TERM.set(variant, concept);
+
+function terms(text: string) {
+  return [...new Set((text.toLowerCase().match(/[a-z0-9₹]+/g) ?? [])
+    .filter(t => t.length > 2 && !STOP_WORDS.has(t))
+    .map(t => CONCEPT_BY_TERM.get(t) ?? t))];
+}
+
 function daysSince(iso?: string) { if (!iso) return 999; return Math.max(0, (Date.now() - new Date(iso).getTime()) / 86400000); }
 
 /** Local, deterministic and explainable relevance matching. Sensitivity controls the return threshold. */
