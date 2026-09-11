@@ -11,7 +11,9 @@ function assessDecision(decision) {
 }
 
 const pending = { expectedOutcome:'Fast deployment', actualOutcome:'' };
-const changed = { expectedOutcome:'Fast deployment', actualOutcome:'Migration became expensive and deployment was slower than expected.' };
+const aligned = { expectedOutcome:'Fast deployment', actualOutcome:'Deployment was fast and the release went smoothly.' };
+const changed = { expectedOutcome:'Fast deployment', actualOutcome:'Migration became expensive and the data model had to be redesigned.' };
 if (assessDecision(pending).outcomeGap !== 'unknown') throw new Error('Pending outcome should be unknown');
+if (assessDecision(aligned).outcomeGap !== 'aligned') throw new Error('Aligned outcome was not detected');
 if (assessDecision(changed).outcomeGap !== 'changed') throw new Error('Changed outcome was not detected');
 console.log('Decision Memory 2.0 checks passed.');
