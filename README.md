@@ -46,7 +46,7 @@ Afterimage is designed around **relevance**.
 
 The project does not claim that no adjacent product exists. The intended differentiation is the product primitive: **a memory is attached to a return condition and contextual relevance rather than only a scheduled date.**
 
-## Current MVP — v0.8
+## Current MVP — v0.9
 
 - Premium responsive dark interface
 - Explicit return-condition capture
@@ -62,13 +62,24 @@ The project does not claim that no adjacent product exists. The intended differe
 - Explicit signal grant/revoke controls
 - 30-day expiring signal permissions with automatic expiry
 - Local signal preview showing exactly what would influence matching
-- **Memory Health review at `/memory-review`**
-- **Fresh / familiar / fading / stale memory health**
-- **Review queue for memories that may no longer be reliable**
-- **Conflict Radar for potentially competing memories**
-- **Explicit user confirmation before a memory is treated as changed truth**
+- **Future Self Inbox at `/future-self`**
+- **Decision Memory at `/decisions`**
+- **Live browser extension with contextual resurfacing**
+- **Explainable match confidence and explicit Useful / Not now feedback**
+- **Local extension storage with no remote AI dependency**
+- Memory Health review at `/memory-review`
+- Fresh / familiar / fading / stale memory health
+- Review queue for memories that may no longer be reliable
+- Conflict Radar for potentially competing memories
+- Explicit user confirmation before a memory is treated as changed truth
 - No account, ads, feed, streaks, or notification spam
 - GitHub Actions build workflow
+
+### Browser resurfacing
+
+The `extension/` folder now contains a working Manifest V3 browser layer. A user can save a clue from the current page, attach a return condition, and keep it in `chrome.storage.local`. When a later page has enough explainable text overlap, a small Afterimage card can appear directly on that page.
+
+The extension deliberately avoids silent history collection. Matching is performed locally against the current page, and the user can dismiss or confirm the resurfaced memory. See `docs/BROWSER_EXTENSION.md` for installation and privacy details.
 
 ### Memory Health
 
@@ -92,9 +103,21 @@ Open `http://localhost:3000`.
 Useful routes:
 
 - `/` — capture, simulate, validate, and manage memories
+- `/future-self` — contextual Future Self Inbox
+- `/decisions` — decision capture and outcome memory
 - `/memory-review` — review memory health and possible conflicts
 - `/context-signals` — manage local context signal permissions
 - `/graph` — explore local memory relationships
+
+### Load the browser extension
+
+1. Open Chrome or Edge and go to its extensions page.
+2. Enable **Developer mode**.
+3. Choose **Load unpacked**.
+4. Select this repository's `extension/` directory.
+5. Open a normal web page and click the Afterimage toolbar icon.
+
+The extension is local-first and does not require a server for capture or matching.
 
 ## Build
 
@@ -114,7 +137,7 @@ Start with `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, and `ROADMAP.md`.
 - 🧭 **Context Explorer** — relevance and matching experiments
 - 🔐 **Privacy Engineer** — local-first security and user control
 - 📱 **Android Builder** — offline-first mobile client
-- 🌐 **Browser Builder** — permission-aware browser capture
+- 🌐 **Browser Builder** — permission-aware browser capture and resurfacing
 - 🎨 **Experience Designer** — calm resurfacing interactions
 - 🧪 **Reality Tester** — real-world scenario testing
 
@@ -124,21 +147,21 @@ Context signals are deliberately opt-in. The current prototype does **not** sile
 
 The Context Signals center lets users grant or revoke prototype signal categories, preview the composed context, tune matching sensitivity, and import portable memories. A granted signal automatically expires after 30 days and can be revoked earlier. Expired signals are excluded from matching.
 
-The browser integration direction uses least-privilege, user-initiated capture rather than background surveillance. Calendar integration will likewise require explicit account permission before reading any event context.
+The browser integration uses least-privilege, user-initiated capture rather than background surveillance. Calendar integration will likewise require explicit account permission before reading any event context.
 
 The production direction is explicit: every future context source must be **opt-in, explainable, revocable, expiring, privacy-preserving, and locally processed wherever practical**.
 
 ## Privacy direction
 
-The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and are not sent to a server. Future integrations should keep sensitive context on-device wherever practical.
+The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and extension memories are stored in `chrome.storage.local`; they are not sent to a server by the current product. Future integrations should keep sensitive context on-device wherever practical.
 
-See `ARCHITECTURE.md`, `SECURITY.md`, and `docs/PRODUCT_PRINCIPLES.md`.
+See `ARCHITECTURE.md`, `SECURITY.md`, `docs/PRODUCT_PRINCIPLES.md`, and `docs/BROWSER_EXTENSION.md`.
 
 ## Roadmap
 
 See `ROADMAP.md` for the public roadmap and research questions.
 
-1. Real permission-aware browser extension
+1. ~~Real permission-aware browser extension~~
 2. Calendar integration with explicit permission
 3. Signal history and per-memory sensitivity
 4. Local encrypted memory store
@@ -146,6 +169,8 @@ See `ROADMAP.md` for the public roadmap and research questions.
 6. Android client
 7. Stronger memory conflict / contradiction detection
 8. Optional encrypted synchronization
+9. Extension ↔ web-app portable memory bridge
+10. User-controlled context permission center
 
 ## Community standards
 
