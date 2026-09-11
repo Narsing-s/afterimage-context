@@ -6,19 +6,12 @@ const triggerEl = $('trigger');
 const statusEl = $('status');
 const saveBtn = $('save');
 const recallBtn = $('recall');
+const syncBtn = $('sync');
 
 let tab = null;
 let pageContext = { title: '', url: '', host: '', text: '', selection: '' };
 
-const tokens = (value) => new Set(
-  String(value || '')
-    .toLowerCase()
-    .replace(/https?:\/\/|www\./g, ' ')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .split(/\s+/)
-    .filter((word) => word.length >= 4)
-);
-
+const tokens = (value) => new Set(String(value || '').toLowerCase().replace(/https?:\/\/|www\./g, ' ').replace(/[^a-z0-9]+/g, ' ').split(/\s+/).filter((word) => word.length >= 4));
 const score = (memory) => {
   const source = `${pageContext.title} ${pageContext.host} ${pageContext.url} ${pageContext.text}`;
   const pageTokens = tokens(source);
@@ -36,7 +29,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
   pageContext.title = tab?.title || '';
   pageContext.url = tab?.url || '';
   urlEl.textContent = pageContext.url;
-
   if (tab?.id) {
     try {
       const response = await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_GET_CONTEXT' });
@@ -44,9 +36,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
         pageContext = { ...pageContext, ...response };
         if (response.selection && !memoryEl.value) memoryEl.value = `Remember: ${response.selection.slice(0, 420)}`;
       }
-    } catch {
-      // Restricted browser pages do not allow content scripts; title/url still work.
-    }
+    } catch {}
   }
   refreshStatus();
 });
@@ -78,7 +68,9 @@ saveBtn.addEventListener('click', async () => {
     host: pageContext.host,
     createdAt: new Date().toISOString(),
     resurfacedCount: 0,
-    dismissed: false
+    dismissed: false,
+    source: 'browser-extension',
+    sourceUrl: pageContext.url
   });
   await chrome.storage.local.set({ afterimages: memories.slice(0, 200) });
   statusEl.innerHTML = '<span class="ok">Saved locally. Future you can meet it again.</span>';
@@ -98,4 +90,27 @@ recallBtn.addEventListener('click', async () => {
   } catch {
     statusEl.textContent = best.text;
   }
+});
+
+syncBtn.addEventListener('click', async () => {
+  const memories = (await getMemories()).slice(0, 25).map((memory) => ({
+    id: memory.id,
+    text: memory.text,
+    trigger: memory.trigger,
+    createdAt: memory.createdAt,
+    resurfacedCount: memory.resurfacedCount || 0,
+    confidence: memory.confidence ?? 0.7,
+    state: memory.state || 'active',
+    mode: 'signal',
+    source: 'browser-extension',
+    sourceUrl: memory.sourceUrl || memory.url || ''
+  }));
+  if (!memories.length) {
+    statusEl.innerHTML = '<span class="err">There are no browser memories to sync yet.</span>';
+    return;
+  }
+  const payload = encodeURIComponent(JSON.stringify(memories));
+  const bridge = `http://localhost:3000/extension-bridge?memories=${payload}`;
+  chrome.tabs.create({ url: bridge });
+  statusEl.innerHTML = '<span class="ok">Opened the local Afterimage bridge. Press Merge there to import.</span>';
 });
