@@ -1,18 +1,101 @@
-const page=document.getElementById('page');
-const send=document.getElementById('send');
-let tab;
-chrome.tabs.query({active:true,currentWindow:true},tabs=>{
-  tab=tabs[0];
-  const title=tab?.title||'Current page';
-  let host='unknown site';
-  try{host=new URL(tab.url||'').hostname||host}catch{}
-  page.textContent=`${title} · ${host}`;
+const $ = (id) => document.getElementById(id);
+const titleEl = $('title');
+const urlEl = $('url');
+const memoryEl = $('memory');
+const triggerEl = $('trigger');
+const statusEl = $('status');
+const saveBtn = $('save');
+const recallBtn = $('recall');
+
+let tab = null;
+let pageContext = { title: '', url: '', host: '', text: '', selection: '' };
+
+const tokens = (value) => new Set(
+  String(value || '')
+    .toLowerCase()
+    .replace(/https?:\/\/|www\./g, ' ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length >= 4)
+);
+
+const score = (memory) => {
+  const source = `${pageContext.title} ${pageContext.host} ${pageContext.url} ${pageContext.text}`;
+  const pageTokens = tokens(source);
+  const memoryTokens = tokens(`${memory.text} ${memory.trigger}`);
+  if (!memoryTokens.size) return 0;
+  let hits = 0;
+  memoryTokens.forEach((word) => { if (pageTokens.has(word)) hits += 1; });
+  return hits / memoryTokens.size;
+};
+
+chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+  tab = tabs[0];
+  titleEl.textContent = tab?.title || 'Current page';
+  try { pageContext.host = new URL(tab?.url || '').hostname; } catch { pageContext.host = ''; }
+  pageContext.title = tab?.title || '';
+  pageContext.url = tab?.url || '';
+  urlEl.textContent = pageContext.url;
+
+  if (tab?.id) {
+    try {
+      const response = await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_GET_CONTEXT' });
+      if (response) {
+        pageContext = { ...pageContext, ...response };
+        if (response.selection && !memoryEl.value) memoryEl.value = `Remember: ${response.selection.slice(0, 420)}`;
+      }
+    } catch {
+      // Restricted browser pages do not allow content scripts; title/url still work.
+    }
+  }
+  refreshStatus();
 });
-send.addEventListener('click',()=>{
-  if(!tab?.url){page.textContent='No active page available.';return;}
-  let host='current site';
-  try{host=new URL(tab.url).hostname||host}catch{}
-  const signal=encodeURIComponent(`Browser category: ${host}`);
-  chrome.tabs.create({url:`http://localhost:3000/context-signals?browser=${signal}`});
-  page.textContent='Context handed to your local Afterimage app.';
+
+async function getMemories() {
+  const result = await chrome.storage.local.get({ afterimages: [] });
+  return Array.isArray(result.afterimages) ? result.afterimages : [];
+}
+
+async function refreshStatus() {
+  const memories = await getMemories();
+  const matches = memories.map((memory) => ({ memory, score: score(memory) })).filter((item) => item.score >= 0.22).sort((a, b) => b.score - a.score);
+  statusEl.innerHTML = `${memories.length} local memories · <span class="ok">${matches.length} relevant here</span>`;
+}
+
+saveBtn.addEventListener('click', async () => {
+  const text = memoryEl.value.trim();
+  if (!text) {
+    statusEl.innerHTML = '<span class="err">Add the clue you want future you to remember.</span>';
+    return;
+  }
+  const memories = await getMemories();
+  memories.unshift({
+    id: crypto.randomUUID(),
+    text,
+    trigger: triggerEl.value.trim(),
+    title: pageContext.title,
+    url: pageContext.url,
+    host: pageContext.host,
+    createdAt: new Date().toISOString(),
+    resurfacedCount: 0,
+    dismissed: false
+  });
+  await chrome.storage.local.set({ afterimages: memories.slice(0, 200) });
+  statusEl.innerHTML = '<span class="ok">Saved locally. Future you can meet it again.</span>';
+});
+
+recallBtn.addEventListener('click', async () => {
+  const memories = await getMemories();
+  const matches = memories.map((memory) => ({ memory, score: score(memory) })).filter((item) => item.score >= 0.22).sort((a, b) => b.score - a.score);
+  if (!matches.length) {
+    statusEl.textContent = `${memories.length} local memories · nothing strongly relevant on this page yet.`;
+    return;
+  }
+  const best = matches[0].memory;
+  try {
+    await chrome.tabs.sendMessage(tab.id, { type: 'AFTERIMAGE_SHOW_MEMORY', memory: best, score: matches[0].score });
+    statusEl.innerHTML = '<span class="ok">Context resurfaced on the page.</span>';
+  } catch {
+    statusEl.textContent = best.text;
+  }
 });
