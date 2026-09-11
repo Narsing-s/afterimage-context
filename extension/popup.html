@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Afterimage</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;width:360px;background:#090a0c;color:#f4f1e9;font:14px system-ui,-apple-system,sans-serif;padding:18px}h1{font-size:19px;letter-spacing:.08em;margin:0}p{color:#9a9da5;line-height:1.45;margin:7px 0}.eyebrow{font-size:10px;color:#d7ff62;font-weight:800;letter-spacing:.16em}.page{border:1px solid #262930;border-radius:14px;padding:11px;margin:14px 0;background:#111318}.page strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.page span{display:block;color:#777d87;font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}label{display:block;font-size:11px;color:#9a9da5;margin:12px 0 5px}textarea,input{width:100%;border:1px solid #2a2e37;border-radius:10px;background:#0d0f13;color:#f4f1e9;padding:10px;outline:none;font:inherit}textarea{min-height:76px;resize:vertical}textarea:focus,input:focus{border-color:#7d9140}button{width:100%;border:0;border-radius:11px;background:#d7ff62;color:#090a0c;padding:11px;margin-top:14px;font-weight:850;cursor:pointer}.secondary{background:#171a20;color:#f4f1e9;border:1px solid #2a2e37}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stats{font-size:11px;color:#777d87;margin-top:10px}.fine{font-size:10px;color:#626873;margin-top:12px}.ok{color:#d7ff62}.err{color:#ff9b9b}
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;width:360px;background:#090a0c;color:#f4f1e9;font:14px system-ui,-apple-system,sans-serif;padding:18px}h1{font-size:19px;letter-spacing:.08em;margin:0}p{color:#9a9da5;line-height:1.45;margin:7px 0}.eyebrow{font-size:10px;color:#d7ff62;font-weight:800;letter-spacing:.16em}.page{border:1px solid #262930;border-radius:14px;padding:11px;margin:14px 0;background:#111318}.page strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.page span{display:block;color:#777d87;font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}label{display:block;font-size:11px;color:#9a9da5;margin:12px 0 5px}textarea,input{width:100%;border:1px solid #2a2e37;border-radius:10px;background:#0d0f13;color:#f4f1e9;padding:10px;outline:none;font:inherit}textarea{min-height:76px;resize:vertical}textarea:focus,input:focus{border-color:#7d9140}button{width:100%;border:0;border-radius:11px;background:#d7ff62;color:#090a0c;padding:11px;margin-top:14px;font-weight:850;cursor:pointer}.secondary{background:#171a20;color:#f4f1e9;border:1px solid #2a2e37}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stats{font-size:11px;color:#777d87;margin-top:10px}.ok{color:#d7ff62}.err{color:#ff9b9b}.fine{font-size:10px;color:#626873;margin-top:12px}
 </style>
 </head>
 <body>
@@ -18,8 +18,9 @@
 <label for="trigger">When should it return?</label>
 <input id="trigger" placeholder="Example: when comparing hosting providers">
 <div class="row"><button id="save">Save Afterimage</button><button class="secondary" id="recall">Check context</button></div>
+<button class="secondary" id="sync">Sync with Afterimage app</button>
 <div class="stats" id="status">Loading local memory…</div>
-<div class="fine">Local-only by default. Nothing is sent to a server. No browsing history is collected.</div>
+<div class="fine">Local-only by default. Sync is an explicit device-to-device handoff to your local Afterimage app. No server is used.</div>
 <script src="popup.js"></script>
 </body>
 </html>
