@@ -4,6 +4,7 @@ import './ui-polish.css';
 import './home-premium.css';
 import './future-product.css';
 import './welcome.css';
+import './settings/settings.css';
 import type { Metadata } from 'next';
 import FutureSelfLauncher from '../components/future-self-launcher';
 import WelcomeGate from '../components/welcome-gate';
