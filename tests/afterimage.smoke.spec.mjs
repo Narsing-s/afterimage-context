@@ -23,4 +23,25 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
   await page.goto('/settings');
   await expect(page.getByText(/Your memory\. Your controls\./i)).toBeVisible();
   await expect(page.getByText(/Encrypted backup/i)).toBeVisible();
+
+  await page.getByPlaceholder(/backup password \(8\+ chars\)/i).fill('afterimage-e2e-password');
+  await page.getByPlaceholder(/confirm password/i).fill('afterimage-e2e-password');
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: /secure export/i }).click();
+  const download = await downloadPromise;
+  const backupPath = await download.path();
+  expect(backupPath).toBeTruthy();
+  await expect(page.getByText(/encrypted backup created locally/i)).toBeVisible();
+
+  await page.evaluate(() => localStorage.removeItem('afterimage:memories:v2'));
+  await page.reload();
+  await expect(page.getByText(/Encrypted backup/i)).toBeVisible();
+
+  await page.getByPlaceholder(/backup password$/i).fill('afterimage-e2e-password');
+  const fileInputs = page.locator('input[type="file"]');
+  await fileInputs.setInputFiles(backupPath);
+  await expect(page.getByText(/encrypted backup restored and merged/i)).toBeVisible();
+
+  await page.goto('/');
+  await expect(page.getByText(/Railway/i).first()).toBeVisible();
 });
