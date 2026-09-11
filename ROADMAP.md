@@ -36,16 +36,16 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Explicit grant/revoke controls
 - [x] Local-only signal preview
 
-## Shipped — v0.8 Context Signals Safety
+## Shipped — v0.8 Context & Memory Safety
 
 - [x] Expiring signal permissions
 - [x] Automatic expiry of stale grants
 - [x] Visible permission expiry dates
 - [x] Revocation before expiry
 - [x] Non-expired signals only influence composed context
+- [x] Memory health engine with fresh / familiar / fading / stale states
 - [x] Memory health review at `/memory-review`
-- [x] Fresh / familiar / fading / stale memory states
-- [x] Review queue for fading and stale memories
+- [x] Health-ranked review queue for fading and stale memories
 - [x] Possible-conflict radar for related memories
 - [x] Explicit user confirmation before changing memory truth
 - [x] Signal history with automatic expiry events
@@ -53,6 +53,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Versioned portable Memory Format v1
 - [x] Stronger deterministic local semantic matching
 - [x] Conservative local contradiction detection
+- [x] Automated memory-health regression checks
 - [ ] Real browser extension with explicit host permissions
 - [ ] Calendar integration with explicit account permission
 - [ ] Accessibility audit
@@ -69,7 +70,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 ## v1.0 direction
 
 - [x] Stable portable memory format v1 baseline
-- [ ] Privacy center and complete deletion
+- [x] Privacy inventory and permanent local-data erase controls
 - [x] Transparent resurfacing explanations
 - [x] Extension/mobile integration foundations
 - [ ] Public API for approved local integrations
