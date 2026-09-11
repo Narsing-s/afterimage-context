@@ -18,6 +18,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -50,7 +51,19 @@ jobs:
 
       - name: Package smoke test
         run: |
-          mkdir -p dist
-          cd extension
-          zip -qr ../dist/afterimage-extension-smoke.zip .
-          unzip -t ../dist/afterimage-extension-smoke.zip
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
+          source = Path('extension')
+          output = Path('dist/afterimage-extension-smoke.zip')
+          output.parent.mkdir(parents=True, exist_ok=True)
+          with ZipFile(output, 'w', ZIP_DEFLATED) as archive:
+              for path in sorted(source.rglob('*')):
+                  if path.is_file():
+                      archive.write(path, path.relative_to(source).as_posix())
+          with ZipFile(output) as archive:
+              bad = archive.testzip()
+              if bad:
+                  raise SystemExit(f'Corrupt archive member: {bad}')
+          print(f'Extension package valid: {output}')
+          PY
