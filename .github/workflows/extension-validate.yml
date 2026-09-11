@@ -1,0 +1,56 @@
+name: Validate browser extension
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extension/**'
+      - '.github/workflows/extension-validate.yml'
+  pull_request:
+    paths:
+      - 'extension/**'
+      - '.github/workflows/extension-validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Validate manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('extension/manifest.json','utf8')); console.log('manifest.json: valid JSON')"
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check extension/background.js
+          node --check extension/content.js
+          node --check extension/options.js
+          node --check extension/popup.js
+
+      - name: Validate extension entrypoints
+        run: |
+          test -f extension/manifest.json
+          test -f extension/background.js
+          test -f extension/content.js
+          test -f extension/popup.html
+          test -f extension/popup.js
+          test -f extension/options.html
+          test -f extension/options.js
+          echo 'All extension entrypoints are present.'
+
+      - name: Package smoke test
+        run: |
+          mkdir -p dist
+          cd extension
+          zip -qr ../dist/afterimage-extension-smoke.zip .
+          unzip -t ../dist/afterimage-extension-smoke.zip
