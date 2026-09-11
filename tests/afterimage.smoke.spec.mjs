@@ -2,13 +2,13 @@ import { test, expect } from '@playwright/test';
 
 test('capture, resurface, persist, and control memory locally', async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem('afterimage:welcome:v1', 'seen');
+  });
   await page.reload();
 
-  const welcome = page.getByRole('dialog');
-  if (await welcome.isVisible().catch(() => false)) {
-    await welcome.getByRole('button', { name: /close welcome message/i }).click();
-  }
+  await expect(page.getByRole('dialog')).toHaveCount(0);
 
   await page.getByLabel('Memory for future you').fill('Use Railway for the next small production service because deployment is fast and rollback is simple.');
   await page.getByLabel('Return condition').fill('When I am choosing a simple production hosting platform');
