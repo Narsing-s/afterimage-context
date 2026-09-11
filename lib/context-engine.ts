@@ -59,7 +59,7 @@ export function matchContext(memories: ContextMemory[], currentContext: string, 
     const matchedMemory = memoryTerms.filter(term => current.has(term)), matchedTrigger = triggerTerms.filter(term => current.has(term));
     const memoryPhrases = new Set(phrases(memory.text));
     const phraseMatches = [...memoryPhrases].filter(phrase => currentPhrases.has(phrase));
-    const fuzzyMatches = memoryTerms.filter(term => [...current].some(candidate => term.length >= 5 && candidate.length >= 5 && (term.startsWith(candidate.slice(0, 5)) || candidate.startsWith(term.slice(0, 5))));
+    const fuzzyMatches = memoryTerms.filter(term => [...current].some(candidate => term.length >= 5 && candidate.length >= 5 && (term.startsWith(candidate.slice(0, 5)) || candidate.startsWith(term.slice(0, 5)))));
     const matchedTerms = [...new Set([...matchedTrigger, ...matchedMemory, ...fuzzyMatches])]; if (!matchedTerms.length) return null;
     const memoryOverlap = matchedMemory.length / Math.max(1, memoryTerms.length), triggerOverlap = matchedTrigger.length / Math.max(1, triggerTerms.length);
     const coverage = matchedTerms.length / Math.max(1, Math.min(memoryTerms.length + triggerTerms.length, current.size));
