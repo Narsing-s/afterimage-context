@@ -1,0 +1,35 @@
+name: Good first issue
+description: Create a small, contributor-friendly task
+labels:
+  - good first issue
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template is for small tasks that a new contributor can complete without knowing the whole codebase.
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      placeholder: UI, accessibility, tests, docs, extension, matching
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Task
+      description: State one concrete change, not a broad project.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      description: List the observable result and any test or build expectation.
+    validations:
+      required: true
+  - type: textarea
+    id: help
+    attributes:
+      label: Helpful context
+      description: Point to relevant files, routes, or examples if known.
