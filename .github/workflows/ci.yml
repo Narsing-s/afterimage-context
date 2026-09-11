@@ -30,6 +30,8 @@ jobs:
         run: node scripts/afterimage-memory-quality.mjs
       - name: Check portable memory format
         run: node scripts/afterimage-memory-format-check.mjs
+      - name: Check memory health rules
+        run: node scripts/afterimage-memory-health-check.mjs
 
   e2e:
     runs-on: ubuntu-latest
