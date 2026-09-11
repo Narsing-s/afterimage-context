@@ -56,12 +56,15 @@ The project does not claim that no adjacent product exists. The intended differe
 - Local context graph and relationship explorer at `/graph`
 - Search/filtering across local memories
 - Local JSON export and schema-checked import
+- **Encrypted local backup with AES-256-GCM + PBKDF2-SHA-256**
+- **Recovery snapshots before destructive memory operations**
 - Configurable context sensitivity
 - Privacy-first Context Signals center at `/context-signals`
 - Browser-category, calendar-topic and manual/topic signal prototypes
 - Explicit signal grant/revoke controls
 - 30-day expiring signal permissions with automatic expiry
 - Local signal preview showing exactly what would influence matching
+- **Curated context vocabulary matching for common equivalent terms**
 - **Memory Health review at `/memory-review`**
 - **Future Self Inbox at `/future-self`**
 - **Decision Memory at `/decisions`**
@@ -70,8 +73,9 @@ The project does not claim that no adjacent product exists. The intended differe
 - **One shared `afterimage:memories:v2` browser memory model**
 - **Explicit Useful / Not now resurfacing feedback**
 - **Deterministic relevance evaluation harness with CI gating**
+- **Playwright Chromium browser smoke testing in CI**
 - No account, ads, feed, streaks, or notification spam
-- GitHub Actions build + evaluation workflows
+- GitHub Actions build + evaluation + browser verification workflows
 
 ### Unified browser memory
 
@@ -87,7 +91,9 @@ Memories are not permanent truth. Afterimage can now identify memories that are 
 
 Two memories can both be useful while pointing in different directions. The Conflict Radar highlights possible competing memories that share meaningful context and lets the user decide which one is still true. It is intentionally conservative: a possible conflict is a prompt for review, not an automatic merge or deletion.
 
-The current matcher is intentionally lightweight and local. It uses explainable term overlap, return-condition weighting, confidence, repetition penalties and configurable sensitivity. It is **not** marketed as semantic AI yet.
+### Explainable context vocabulary
+
+The local matcher remains intentionally transparent. A small curated vocabulary maps common variants such as `db` → `database`, `buying` → `purchase`, and `deployment` → `deploy`. This improves contextual recall without a remote model, hidden embeddings, or server-side processing. The matcher is still **not** marketed as semantic AI.
 
 ## Evaluation
 
@@ -97,7 +103,7 @@ The project includes a dependency-free synthetic evaluation harness:
 node scripts/afterimage-evaluate.mjs
 ```
 
-It tests relevant and unrelated scenarios using the same explainable lexical baseline and runs automatically in CI. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and the roadmap toward a larger versioned benchmark.
+It tests relevant and unrelated scenarios using the same explainable lexical baseline plus curated context vocabulary. It runs automatically in CI. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and the roadmap toward a larger versioned benchmark.
 
 ## Run locally
 
@@ -117,6 +123,8 @@ Useful routes:
 - `/context-signals` — manage local context signal permissions
 - `/graph` — explore local memory relationships
 - `/extension-bridge` — explicitly merge browser-extension memories into the main library
+- `/settings` — control center, recovery, export, and encrypted backup
+- `/memory-vault` — edit, quiet, archive, import, export, and forget memories
 
 ## Browser extension
 
@@ -132,6 +140,12 @@ The `extension/` directory contains a Manifest V3 Chrome/Edge extension.
 8. On `/extension-bridge`, choose **Merge into Memory library**.
 
 The extension is deliberately least-privilege and user initiated. It does not silently collect browsing history.
+
+## Encrypted backup
+
+From `/settings`, users can create an encrypted backup with a local password. The password never leaves the browser and is never stored by Afterimage. Restoring a backup authenticates and decrypts locally, validates the memory payload, creates a recovery snapshot, and merges records by ID.
+
+See [`docs/RECOVERY_AND_PRIVACY.md`](docs/RECOVERY_AND_PRIVACY.md) for the security boundary.
 
 ## Build
 
@@ -163,6 +177,7 @@ Useful contributor paths:
 - [`START_HERE.md`](START_HERE.md) — fastest route into the project
 - [`ROADMAP.md`](ROADMAP.md) — product direction
 - [`docs/EVALUATION.md`](docs/EVALUATION.md) — quality methodology
+- [`docs/RECOVERY_AND_PRIVACY.md`](docs/RECOVERY_AND_PRIVACY.md) — storage and backup boundary
 
 ### Contributor missions
 
@@ -188,7 +203,7 @@ The production direction is explicit: every future context source must be **opt-
 
 The MVP is local-first: captured memories and signal preferences are stored in browser `localStorage` and are not sent to a server. Future integrations should keep sensitive context on-device wherever practical.
 
-See `ARCHITECTURE.md`, `SECURITY.md`, and `docs/PRODUCT_PRINCIPLES.md`.
+See `ARCHITECTURE.md`, `SECURITY.md`, `docs/PRODUCT_PRINCIPLES.md`, and `docs/RECOVERY_AND_PRIVACY.md`.
 
 ## Roadmap
 
