@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contributor Start Here
+    url: https://github.com/Narsing-s/afterimage-context/blob/main/START_HERE.md
+    about: Find a small contribution path and understand the project in 10 minutes.
+  - name: Community guide
+    url: https://github.com/Narsing-s/afterimage-context/blob/main/COMMUNITY.md
+    about: Read community expectations and contribution missions.
+  - name: Discussions
+    url: https://github.com/Narsing-s/afterimage-context/discussions
+    about: Ask questions or explore larger product ideas before opening an issue.
