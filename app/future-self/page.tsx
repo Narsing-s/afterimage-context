@@ -1,0 +1,68 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Archive, Check, Clock3, RefreshCw, Sparkles, X } from 'lucide-react';
+
+type Memory = { id:string; text:string; trigger?:string; why?:string; state?:string; confidence?:number; createdAt:string; resurfacedCount?:number };
+const KEY = 'afterimage:memories:v2';
+
+function load(): Memory[] {
+  try { const raw = localStorage.getItem(KEY) || localStorage.getItem('afterimage:memories:v1') || '[]'; const data = JSON.parse(raw); return Array.isArray(data) ? data : []; } catch { return []; }
+}
+
+export default function FutureSelf() {
+  const [memories, setMemories] = useState<Memory[]>([]);
+  const [selected, setSelected] = useState<Memory | null>(null);
+  const [toast, setToast] = useState('');
+  useEffect(() => setMemories(load()), []);
+
+  const active = useMemo(() => memories.filter(m => m.state !== 'archived' && m.state !== 'outdated'), [memories]);
+  const needsReview = useMemo(() => active.filter(m => (m.confidence ?? .7) < .7 || (m.resurfacedCount ?? 0) >= 3), [active]);
+  const recent = useMemo(() => [...active].sort((a,b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0,6), [active]);
+
+  function save(next: Memory[]) { setMemories(next); localStorage.setItem(KEY, JSON.stringify(next)); }
+  function act(id:string, state:string) {
+    save(memories.map(m => m.id === id ? {...m, state} : m));
+    setSelected(null);
+    setToast(state === 'confirmed' ? 'Memory confirmed for future you.' : state === 'outdated' ? 'Memory marked as no longer true.' : 'Memory archived quietly.');
+    setTimeout(() => setToast(''), 2600);
+  }
+
+  return <main className="future-page">
+    <nav className="graph-nav"><Link href="/" className="graph-back"><ArrowLeft size={14}/> Back to Afterimage</Link><span className="future-nav-mark"><Sparkles size={13}/> FUTURE SELF</span></nav>
+    <section className="future-hero">
+      <div className="section-kicker">THE MEMORY LAYER FOR YOUR FUTURE SELF</div>
+      <h1>What does future-you<br/><em>need to remember?</em></h1>
+      <p>Afterimage keeps the important reasons behind your decisions close — without forcing you to schedule a reminder. Review what is still useful, what is fading, and what you have outgrown.</p>
+      <div className="future-actions"><Link className="future-primary" href="/#memories">+ Leave an afterimage</Link><Link className="future-secondary" href="/memory-review">Review memory health</Link></div>
+    </section>
+
+    <section className="future-stats">
+      <div><span>ACTIVE MEMORIES</span><b>{active.length}</b><small>Available for contextual resurfacing</small></div>
+      <div><span>NEEDS REVIEW</span><b>{needsReview.length}</b><small>Low confidence or frequently resurfaced</small></div>
+      <div><span>LOCAL BY DEFAULT</span><b>100%</b><small>Your current memory store stays in this browser</small></div>
+    </section>
+
+    {toast && <div className="future-toast" role="status"><Check size={15}/> {toast}</div>}
+
+    <section className="future-section">
+      <div className="section-kicker">FUTURE SELF INBOX</div>
+      <h2>Small clues. Better decisions.</h2>
+      {active.length === 0 ? <div className="future-empty"><Sparkles size={22}/><b>Your future self has nothing yet.</b><p>Leave one memory with a Return Condition. The goal is not to collect notes — it is to preserve the reason behind a decision until it matters again.</p><Link href="/#memories" className="future-primary">Create your first memory</Link></div> : <div className="future-grid">{recent.map(memory => <article className="future-card" key={memory.id}>
+        <div className="future-card-top"><span>{memory.state === 'confirmed' ? 'CONFIRMED' : 'WAITING FOR CONTEXT'}</span><span>{Math.round((memory.confidence ?? .7)*100)}% CONFIDENCE</span></div>
+        <p className="future-quote">“{memory.text}”</p>
+        {memory.trigger && <div className="future-chip"><Clock3 size={12}/> {memory.trigger}</div>}
+        {memory.why && <p className="future-why">Why it matters: {memory.why}</p>}
+        <div className="future-card-actions"><button onClick={() => act(memory.id,'confirmed')}><Check size={13}/> Still true</button><button onClick={() => setSelected(memory)}><RefreshCw size={13}/> Review</button><button onClick={() => act(memory.id,'outdated')}><X size={13}/> Changed</button><button onClick={() => act(memory.id,'archived')}><Archive size={13}/> Archive</button></div>
+      </article>)}</div>}
+    </section>
+
+    <section className="future-section future-explainer">
+      <div><div className="section-kicker">THE PROMISE</div><h2>Not another reminder.</h2><p>A reminder says <i>when</i>. A note says <i>where</i>. Afterimage is designed around <strong>when this becomes relevant again</strong>.</p></div>
+      <div className="future-flow"><span>MEMORY</span><b>→</b><span>RETURN CONDITION</span><b>→</b><span>CONTEXT</span><b>→</b><span>RELEVANCE</span><b>→</b><span>FEEDBACK</span></div>
+    </section>
+
+    {selected && <div className="inspector-backdrop" onClick={() => setSelected(null)}><aside className="inspector" onClick={e => e.stopPropagation()}><button className="inspector-close" onClick={() => setSelected(null)}><X size={16}/></button><div className="section-kicker">FUTURE SELF REVIEW</div><h3>Is this still true?</h3><p className="inspector-memory">“{selected.text}”</p>{selected.trigger && <div className="inspect-row"><span>RETURN CONDITION</span><b>{selected.trigger}</b></div>}{selected.why && <div className="inspect-row"><span>WHY IT MATTERS</span><b>{selected.why}</b></div>}<button className="inspector-action" onClick={() => act(selected.id,'confirmed')}><Check size={14}/> Yes — keep this memory</button><button className="inspector-action" onClick={() => act(selected.id,'outdated')}><X size={14}/> No — this changed</button><button className="inspector-action" onClick={() => setSelected(null)}>Not sure yet</button></aside></div>}
+  </main>;
+}
