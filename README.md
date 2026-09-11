@@ -69,8 +69,9 @@ The project does not claim that no adjacent product exists. The intended differe
 - **Browser → main-app memory bridge at `/extension-bridge`**
 - **One shared `afterimage:memories:v2` browser memory model**
 - **Explicit Useful / Not now resurfacing feedback**
+- **Deterministic relevance evaluation harness with CI gating**
 - No account, ads, feed, streaks, or notification spam
-- GitHub Actions build workflow
+- GitHub Actions build + evaluation workflows
 
 ### Unified browser memory
 
@@ -87,6 +88,16 @@ Memories are not permanent truth. Afterimage can now identify memories that are 
 Two memories can both be useful while pointing in different directions. The Conflict Radar highlights possible competing memories that share meaningful context and lets the user decide which one is still true. It is intentionally conservative: a possible conflict is a prompt for review, not an automatic merge or deletion.
 
 The current matcher is intentionally lightweight and local. It uses explainable term overlap, return-condition weighting, confidence, repetition penalties and configurable sensitivity. It is **not** marketed as semantic AI yet.
+
+## Evaluation
+
+The project includes a dependency-free synthetic evaluation harness:
+
+```bash
+node scripts/afterimage-evaluate.mjs
+```
+
+It tests relevant and unrelated scenarios using the same explainable lexical baseline and runs automatically in CI. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and the roadmap toward a larger versioned benchmark.
 
 ## Run locally
 
@@ -151,6 +162,7 @@ Useful contributor paths:
 - [`COMMUNITY.md`](COMMUNITY.md) — community expectations
 - [`START_HERE.md`](START_HERE.md) — fastest route into the project
 - [`ROADMAP.md`](ROADMAP.md) — product direction
+- [`docs/EVALUATION.md`](docs/EVALUATION.md) — quality methodology
 
 ### Contributor missions
 
