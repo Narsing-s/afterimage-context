@@ -132,7 +132,25 @@ npm run build
 
 Afterimage is being built in public. We want contributors interested in context, memory, privacy, human-computer interaction, and calm software.
 
-Start with `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, and `ROADMAP.md`.
+### Contribute in 10 minutes
+
+You do **not** need to understand the entire codebase before contributing.
+
+1. Read [`START_HERE.md`](START_HERE.md).
+2. Pick an issue labeled **good first issue**.
+3. Make one focused change.
+4. Run `npm run build`.
+5. Open a pull request with what changed and how you tested it.
+
+Current starter missions include keyboard accessibility, local memory tests, clearer “Why now?” explanations, Chrome/Edge compatibility, mobile polish, evaluation scenarios, and a short contributor demo.
+
+Useful contributor paths:
+
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — workflow and design principles
+- [`GOOD_FIRST_ISSUES.md`](GOOD_FIRST_ISSUES.md) — starter missions
+- [`COMMUNITY.md`](COMMUNITY.md) — community expectations
+- [`START_HERE.md`](START_HERE.md) — fastest route into the project
+- [`ROADMAP.md`](ROADMAP.md) — product direction
 
 ### Contributor missions
 
