@@ -17,8 +17,8 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
   await page.getByRole('button', { name: /store afterimage/i }).click();
 
   await expect(page.getByText(/memory created/i).first()).toBeVisible();
-  await page.getByLabel('Simulate current context').fill('When I am choosing a simple production hosting platform');
-  await page.getByRole('button', { name: /test context/i }).click();
+  await page.getByRole('button', { name: /validate memory/i }).click();
+  await expect(page.getByText(/Validation passed:/i)).toBeVisible();
   await expect(page.getByText(/Why now:/i)).toBeVisible();
   await expect(page.getByText(/Railway/i).first()).toBeVisible();
 
