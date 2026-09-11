@@ -1,0 +1,12 @@
+{
+  "name": "Afterimage — Contextual Memory",
+  "short_name": "Afterimage",
+  "description": "A local-first contextual memory layer for your future self.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090a0c",
+  "theme_color": "#090a0c",
+  "orientation": "any",
+  "icons": [{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
