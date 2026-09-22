@@ -9,41 +9,96 @@ Define return condition
      ↓
 Observe approved context
      ↓
-Match context locally
+Normalize context locally
+     ↓
+Hybrid retrieval
+     ↓
+Temporal/conflict reasoning
      ↓
 Explain relevance
      ↓
-Resurface memory
+Resurface
+     ↓
+User feedback
+     ↓
+Learn
 ```
 
-## Principles
+## Layers
 
-### Local-first
-The MVP stores memories in browser storage. Future context processing should prefer on-device computation.
+### 1. Clients
+Web/PWA, browser extension, future Android and desktop clients.
 
-### Explicit signals
-Integrations should require clear user permission. Context should never become an excuse for silent surveillance.
+### 2. Context adapters
+Manual context, browser categories, calendar topics, documents, GitHub and future approved integrations. Every adapter must expose only the minimum context required.
 
-### Explainable resurfacing
-Every surfaced memory should be able to answer: **Why am I seeing this now?**
+### 3. Memory Core
+The reusable domain layer in `lib/memory-core.ts` owns provenance, evidence, feedback, priority, consolidation and memory events.
 
-### User-owned memory
-Users should be able to inspect, export, disable, and permanently delete their data.
+### 4. Retrieval
+The deterministic matcher remains the privacy-safe baseline. `lib/hybrid-retrieval.ts` allows optional semantic providers to be composed with lexical retrieval.
 
-## Planned layers
+### 5. Intelligence
+Future local/remote models may propose extraction, semantic retrieval, conflict reasoning or consolidation. Models never silently mutate memory.
 
-### Memory layer
-Stores the user's captured thought, metadata, sensitivity, and return condition.
+### 6. Resurfacing
+Ranking combines relevance, importance, confidence, history, sensitivity, feedback and anti-noise controls. Every return should explain itself.
 
-### Context layer
-Normalizes signals such as user-entered topics, browser context, calendar context, or repeated behavior.
+### 7. Storage
+Current MVP: browser storage. Target: encrypted IndexedDB/SQLite with portable migrations.
 
-### Matching layer
-Determines whether current context is sufficiently related to a return condition.
+### 8. Sync
+Optional end-to-end encrypted synchronization. Servers should store ciphertext, not plaintext personal memory.
 
-### Resurfacing layer
-Presents one useful memory with a concise explanation and user controls.
+## Memory contract
+
+A future canonical memory record should contain:
+
+```text
+identity
+content
+return condition
+state
+confidence
+importance
+sensitivity
+provenance
+evidence
+feedback
+relationships
+supersession
+timestamps
+```
+
+## AI / agent boundary
+
+AI is an advisor, not the owner of memory.
+
+Allowed:
+- propose a memory
+- propose a merge
+- retrieve approved memory
+- explain relevance
+- suggest an update
+
+Requires user permission:
+- write durable memory
+- change a confirmed memory
+- consolidate memories
+- delete memory
+
+The memory firewall should make these permissions explicit for every agent/integration.
+
+## Public API direction
+
+The first API foundation is intentionally stateless: clients supply their memory collection to `/api/memory`. This avoids introducing a cloud database into the local-first MVP.
+
+Future clients can replace the storage layer without changing retrieval and domain contracts.
 
 ## Privacy boundary
 
-A future implementation should make it possible to keep sensitive context processing on-device. Remote services, if introduced, must be optional, documented, and designed around encrypted data rather than raw personal memory.
+Sensitive context processing should happen on-device wherever practical. Remote services, if introduced, must be optional, documented, minimised and compatible with encrypted memory storage.
+
+## Non-goals
+
+Afterimage is not a generic chatbot, social feed, engagement tracker or silent surveillance system.

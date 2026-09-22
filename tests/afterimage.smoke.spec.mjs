@@ -27,7 +27,7 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
 
   await page.goto('/settings');
   await expect(page.getByText(/Your memory\. Your controls\./i)).toBeVisible();
-  await expect(page.getByText(/Encrypted backup/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Encrypted backup', exact: true })).toBeVisible();
 
   await page.getByPlaceholder(/backup password \(8\+ chars\)/i).fill('afterimage-e2e-password');
   await page.getByPlaceholder(/confirm password/i).fill('afterimage-e2e-password');
@@ -40,7 +40,7 @@ test('capture, resurface, persist, and control memory locally', async ({ page })
 
   await page.evaluate(() => localStorage.removeItem('afterimage:memories:v2'));
   await page.reload();
-  await expect(page.getByText(/Encrypted backup/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Encrypted backup', exact: true })).toBeVisible();
 
   await page.getByPlaceholder(/backup password$/i).fill('afterimage-e2e-password');
   const fileInputs = page.locator('input[type="file"]');

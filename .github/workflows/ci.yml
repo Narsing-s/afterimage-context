@@ -38,6 +38,8 @@ jobs:
         run: node scripts/afterimage-memory-timeline-check.mjs
       - name: Check Decision Memory 2.0 rules
         run: node scripts/afterimage-decision-memory-check.mjs
+      - name: Check Memory Core foundation
+        run: node scripts/afterimage-memory-core-check.mjs
 
   e2e:
     runs-on: ubuntu-latest
