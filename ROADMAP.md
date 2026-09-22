@@ -9,8 +9,8 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Memory health and conflict review
 - [x] Decision Memory and timeline
 - [x] Local context graph
-- [x] Portable Memory Format v1
-- [x] Encrypted local backups and recovery
+- [x] Portable versioned memory format
+- [x] Encrypted local backups and recovery snapshots
 - [x] Browser extension foundation
 - [x] Expiring context permissions
 - [x] Deterministic local semantic baseline
@@ -19,6 +19,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Consolidation candidate detection with explicit approval
 - [x] Hybrid retrieval provider abstraction
 - [x] Local Memory Core API foundation
+- [x] Memory governance: cooldowns, migration, sensitive-content detection/scrubbing and integrity hashing
 
 ## Next — Memory OS
 
@@ -28,7 +29,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [ ] Stronger temporal versioning and supersession graph
 - [ ] Evidence-backed confidence explanations
 - [ ] Memory deduplication and consolidation UI
-- [ ] Anti-annoyance / cooldown learning engine
+- [ ] Learned anti-annoyance ranking beyond deterministic cooldowns
 - [ ] Browser extension production release
 - [ ] Accessibility audit
 
@@ -55,10 +56,12 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 
 ## Trust and safety
 
-- [ ] Cryptographic integrity for memory events
+- [x] Local sensitive-content detection before external integration
+- [x] Portable schema migration foundation
+- [x] Optional event/payload integrity fingerprints
+- [ ] Cryptographic authenticity/signatures for memory events
 - [ ] Recovery history rather than a single snapshot
-- [ ] Export/import migration tests across format versions
-- [ ] Secret/PII detection before external integrations
+- [ ] Export/import migration tests across all future format versions
 - [ ] Data minimization and retention controls
 - [ ] Threat model and privacy audit
 - [ ] Offline-first integration test matrix
