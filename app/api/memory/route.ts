@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { findConsolidationCandidates, memoryPriority, recordFeedback, type MemoryRecord, type MemoryFeedback } from '../../../lib/memory-core';
 import { hybridRetrieve } from '../../../lib/hybrid-retrieval';
+import { buildLocalIndex, searchVectorIndex } from '../../../lib/local-embeddings';
 import { detectSensitiveContent, scrubSensitiveContent, shouldResurface } from '../../../lib/memory-governance';
 
 export const runtime='nodejs';
@@ -10,7 +11,7 @@ export async function POST(request:Request){
     const body=await request.json() as {action?:string;memories?:MemoryRecord[];query?:string;memoryId?:string;feedback?:MemoryFeedback;text?:string};
     const memories=Array.isArray(body.memories)?body.memories:[];
     if(body.action==='search'){
-      const matches=await hybridRetrieve(memories.filter(m=>shouldResurface(m)),String(body.query||''));
+      const eligible=memories.filter(m=>shouldResurface(m));\n      const index=buildLocalIndex(eligible);\n      const vector=searchVectorIndex(eligible,index,String(body.query||''));\n      const matches=await hybridRetrieve(eligible,String(body.query||''),{provider:{name:'local-vector',search:async()=>vector}});
       return NextResponse.json({matches});
     }
     if(body.action==='feedback'){

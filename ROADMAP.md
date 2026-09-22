@@ -24,7 +24,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 ## Next — Memory OS
 
 - [x] IndexedDB storage abstraction with automatic localStorage migration\n- [x] Web Crypto AES-GCM encrypted snapshot primitives\n- [x] Encrypted primary local database with user-facing vault/passphrase flow\n- [x] Recovery key, explicit lock, and encrypted IndexedDB migration boundary\n- [ ] Auto-lock policy and passphrase rotation UX
-- [ ] Local embeddings and vector index
+- [x] Local embeddings and vector index\n- [x] Offline deterministic vector retrieval integrated with hybrid search
 - [ ] Hybrid lexical + semantic benchmark
 - [ ] Stronger temporal versioning and supersession graph
 - [ ] Evidence-backed confidence explanations
