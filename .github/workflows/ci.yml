@@ -40,6 +40,8 @@ jobs:
         run: node scripts/afterimage-decision-memory-check.mjs
       - name: Check Memory Core foundation
         run: node scripts/afterimage-memory-core-check.mjs
+      - name: Check Memory Governance foundation
+        run: node scripts/afterimage-memory-governance-check.mjs
 
   e2e:
     runs-on: ubuntu-latest
