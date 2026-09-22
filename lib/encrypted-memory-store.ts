@@ -162,7 +162,7 @@ async function deriveRecoveryKey(recoveryKey: string, salt: Uint8Array) {
 export async function encryptSnapshot(snapshot: MemorySnapshot, key: CryptoKey, saltBase64 = ''): Promise<EncryptedSnapshot> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(JSON.stringify(snapshot)));
-  return { id: 'current', format: 'afterimage.encrypted-memory.v1', updatedAt: new Date().toISOString(), salt: saltBase64, iv: bytesToBase64(iv), ciphertext: bytesToBase64(new Uint8Array(encoded)) };
+  return { id: 'current', format: 'afterimage.encrypted-memory.v1', updatedAt: new Date().toISOString(), salt: saltBase64, iv: bytesToBase64(iv), ciphertext: bytesToBase64(new Uint8Array(encoded)), recoveryIv: '', recoveryCiphertext: '' };
 }
 
 export async function decryptSnapshot(payload: {iv:string;ciphertext:string}, key: CryptoKey): Promise<MemorySnapshot> {
@@ -192,7 +192,7 @@ export async function enableMemoryVault(passphrase: string, snapshot: MemorySnap
   const db = await openDatabase();
   await new Promise<void>((resolve, reject) => {
     const tx = db.transaction([STORE, META_STORE], 'readwrite');
-    tx.objectStore(STORE).put(encryptedForPassphrase);
+    tx.objectStore(STORE).put({ ...encryptedForPassphrase, recoveryIv: encryptedForRecovery.iv, recoveryCiphertext: encryptedForRecovery.ciphertext });
     tx.objectStore(META_STORE).put(metadata);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error ?? new Error('Unable to enable Memory Vault.'));
