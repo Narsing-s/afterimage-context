@@ -23,7 +23,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 
 ## Next — Memory OS
 
-- [ ] Encrypted primary local database (IndexedDB/SQLite depending on client)
+- [x] IndexedDB storage abstraction with automatic localStorage migration\n- [x] Web Crypto AES-GCM encrypted snapshot primitives\n- [ ] Encrypted primary local database enabled by a user-facing vault/passphrase flow
 - [ ] Local embeddings and vector index
 - [ ] Hybrid lexical + semantic benchmark
 - [ ] Stronger temporal versioning and supersession graph

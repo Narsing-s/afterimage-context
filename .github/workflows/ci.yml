@@ -42,6 +42,8 @@ jobs:
         run: node scripts/afterimage-memory-core-check.mjs
       - name: Check Memory Governance foundation
         run: node scripts/afterimage-memory-governance-check.mjs
+      - name: Check encrypted storage foundation
+        run: node scripts/afterimage-encrypted-store-check.mjs
 
   e2e:
     runs-on: ubuntu-latest
