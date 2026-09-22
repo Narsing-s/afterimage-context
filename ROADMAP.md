@@ -2,96 +2,82 @@
 
 Afterimage is an open exploration of context-memory computing. The roadmap is intentionally experimental.
 
-## Shipped — v0.5 Adaptive Memory
+## Shipped — contextual memory foundation
 
-- [x] Context simulation
-- [x] Return-condition data model
-- [x] Explain why a memory resurfaced
-- [x] Versioned local persistence
-- [x] Relevance scoring
-- [x] Memory confidence
-- [x] Resurfacing history
-- [x] Snooze and outdated controls
-- [x] Local export
-- [x] Memory inspector
+- [x] Context simulation and explicit return conditions
+- [x] Explainable relevance and resurfacing
+- [x] Memory health and conflict review
+- [x] Decision Memory and timeline
+- [x] Local context graph
+- [x] Portable Memory Format v1
+- [x] Encrypted local backups and recovery
+- [x] Browser extension foundation
+- [x] Expiring context permissions
+- [x] Deterministic local semantic baseline
+- [x] Memory Core provenance/evidence model
+- [x] Feedback-aware confidence and priority
+- [x] Consolidation candidate detection with explicit approval
+- [x] Hybrid retrieval provider abstraction
+- [x] Local Memory Core API foundation
 
-## Shipped — v0.6 Personal Context Graph
+## Next — Memory OS
 
-- [x] Local context graph engine
-- [x] Shared-context relationships
-- [x] Shared-return-condition relationships
-- [x] Pattern relationships
-- [x] Local graph/cluster explorer at `/graph`
-- [x] Explainable deterministic graph generation
-
-## Shipped — v0.7 Context Signals
-
-- [x] Search and filtering of local memories
-- [x] Import with schema validation
-- [x] Context sensitivity control
-- [x] Permission center for context signals
-- [x] Browser-category signal prototype
-- [x] Calendar-topic signal prototype
-- [x] Manual/topic signal composition
-- [x] Explicit grant/revoke controls
-- [x] Local-only signal preview
-
-## Shipped — v0.8 Context & Memory Safety
-
-- [x] Expiring signal permissions
-- [x] Automatic expiry of stale grants
-- [x] Visible permission expiry dates
-- [x] Revocation before expiry
-- [x] Non-expired signals only influence composed context
-- [x] Memory health engine with fresh / familiar / fading / stale states
-- [x] Memory health review at `/memory-review`
-- [x] Health-ranked review queue for fading and stale memories
-- [x] Possible-conflict radar for related memories
-- [x] Explicit user confirmation before changing memory truth
-- [x] Signal history with automatic expiry events
-- [x] Per-memory sensitivity
-- [x] Versioned portable Memory Format v1
-- [x] Stronger deterministic local semantic matching
-- [x] Conservative local contradiction detection
-- [x] Automated memory-health regression checks
-- [ ] Real browser extension with explicit host permissions
-- [ ] Calendar integration with explicit account permission
+- [ ] Encrypted primary local database (IndexedDB/SQLite depending on client)
+- [ ] Local embeddings and vector index
+- [ ] Hybrid lexical + semantic benchmark
+- [ ] Stronger temporal versioning and supersession graph
+- [ ] Evidence-backed confidence explanations
+- [ ] Memory deduplication and consolidation UI
+- [ ] Anti-annoyance / cooldown learning engine
+- [ ] Browser extension production release
 - [ ] Accessibility audit
 
-## Platform — v0.9
+## Platform
 
+- [ ] Public SDK for approved local integrations
+- [ ] MCP memory server
 - [ ] Android client
-- [ ] Local encrypted memory store
-- [x] On-device semantic matching option (deterministic, dependency-free baseline)
-- [x] Stronger memory conflict / contradiction detection baseline
-- [ ] Optional encrypted synchronization
-- [x] Cross-device export/import through Memory Format v1
+- [ ] Desktop client
+- [ ] Optional end-to-end encrypted synchronization
+- [ ] GitHub and calendar integrations
+- [ ] Document and project connectors
 
-## v1.0 direction
+## AI and agent layer
 
-- [x] Stable portable memory format v1 baseline
-- [x] Privacy inventory and permanent local-data erase controls
-- [x] Transparent resurfacing explanations
-- [x] Extension/mobile integration foundations
-- [ ] Public API for approved local integrations
-- [x] Reliable automated test suite baseline
+- [ ] Optional local embedding provider
+- [ ] Optional AI provider abstraction
+- [ ] AI-assisted memory extraction with user approval
+- [ ] Agent memory read/write permissions
+- [ ] Memory firewall for AI agents
+- [ ] Provenance-aware AI explanations
+- [ ] Agent evaluation benchmark
+- [ ] Multi-agent memory namespaces
 
-## Research questions
+## Trust and safety
+
+- [ ] Cryptographic integrity for memory events
+- [ ] Recovery history rather than a single snapshot
+- [ ] Export/import migration tests across format versions
+- [ ] Secret/PII detection before external integrations
+- [ ] Data minimization and retention controls
+- [ ] Threat model and privacy audit
+- [ ] Offline-first integration test matrix
+
+## Research
 
 - When is a memory genuinely relevant?
 - How can relevance be inferred without surveillance?
-- How should users control sensitivity and confidence?
-- How do we prevent repeated or annoying resurfacing?
 - How should conflicting memories be represented?
+- How should temporal change affect retrieval?
 - Can useful context matching happen entirely on-device?
-- How far can local semantic matching improve without shipping personal context to a remote model?
+- How can AI use memory without becoming the owner of memory?
 
-## What is deliberately not on the roadmap
+## Deliberately not planned
 
 - Engagement streaks
 - Advertising based on personal memory
 - Selling memory data
 - Infinite feeds
 - Mandatory cloud accounts
-- Silent browser or calendar surveillance
-- Auto-deleting user conversations or memories
+- Silent browser/calendar surveillance
+- Automatic deletion or rewriting of user memories
