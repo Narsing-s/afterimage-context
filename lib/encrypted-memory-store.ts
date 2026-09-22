@@ -31,7 +31,7 @@ function hasIndexedDb() { return typeof indexedDB !== 'undefined'; }
 function emitVaultState() { if (typeof window !== 'undefined') window.dispatchEvent(new Event(VAULT_EVENT)); }
 function bytesToBase64(bytes: Uint8Array) { return btoa(String.fromCharCode(...bytes)); }
 function base64ToBytes(value: string) { return Uint8Array.from(atob(value), char => char.charCodeAt(0)); }
-function bytesToBase64Url(bytes: Uint8Array) { return bytesToBase64(bytes).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/g, ''); }
+function bytesToBase64Url(bytes: Uint8Array) { return bytesToBase64(bytes).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, ''); }
 
 function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
