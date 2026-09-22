@@ -14,77 +14,89 @@ Capture a useful piece of knowledge today, attach a return condition, and let Af
 capture → return condition → context → relevance → feedback → resurfacing → learning
 ```
 
-## Current MVP — v0.9
+## Current product foundation
 
-- Premium responsive dark interface
-- Explicit return-condition capture
-- Signal and pattern trigger modes
-- Adaptive lifecycle: active, confirmed, outdated, archived, snoozed
-- Confidence, resurfacing history and per-memory sensitivity
-- **Memory Health** with fresh / familiar / fading / stale states
-- **Health-ranked Memory Review** at `/memory-review`
-- **Conflict Radar** for possible competing memories
-- Conservative contradiction detection with explicit user review
-- Future Self Inbox and contextual resurfacing
-- Decision Memory and outcome tracking
-- Local context graph and relationship explorer at `/graph`
-- Search/filtering across local memories
-- Schema-checked JSON import/export
-- **Portable, versioned `afterimage.memory.v1` bundles**
-- **Encrypted local backup with AES-256-GCM + PBKDF2-SHA-256**
-- Recovery snapshots before destructive operations
-- Privacy-first Context Signals center at `/context-signals`
-- Browser-category, calendar-topic and manual/topic signal prototypes
-- Explicit signal grant/revoke controls with 30-day expiry
-- **Bounded local signal history for permission changes and expiry**
-- Local signal preview showing exactly what would influence matching
-- Curated context vocabulary and deterministic local semantic matching
-- Playwright Chromium smoke testing and deterministic validation checks in CI
+- Contextual memories with explicit return conditions
+- Future Self Inbox, Decision Memory and memory timeline
+- Memory Health and conservative Conflict Radar
+- Local context graph and explainable matching
+- Portable versioned memory format
+- Encrypted local backups and recovery snapshots
+- Explicit, expiring context permissions
+- Browser extension with explicit capture
+- **Extensible Memory Core** with provenance, evidence, importance and feedback
+- **Hybrid retrieval API**: deterministic local retrieval now, optional semantic provider later
+- **Memory consolidation candidates** with explicit user approval
+- **Memory feedback learning** for usefulness, noise and importance
+- **Temporal/provenance primitives** for future desktop, mobile and agent clients
+- **Local API route** at `/api/memory` for search, feedback, consolidation candidates and priorities
 - No account, ads, feed, streaks, notification spam or silent browsing surveillance
 
-## Memory Health
+## Future AI architecture
 
-Memory is not treated as permanent truth. Afterimage estimates whether a memory is **fresh, familiar, fading or stale** using local confidence, reuse and age signals.
+Afterimage is being evolved from a contextual-memory application into a reusable **private memory layer for humans and AI agents**:
 
-The `/memory-review` queue surfaces weaker memories first. You decide whether a memory is still true or outdated; Afterimage never silently rewrites the past.
+```text
+Context sources / AI agents / user input
+                ↓
+        Context normalization
+                ↓
+        Memory Core + provenance
+                ↓
+     Hybrid retrieval + ranking
+                ↓
+ Conflict / temporal reasoning
+                ↓
+   Explainable resurfacing
+                ↓
+       User feedback/control
+```
 
-## Conflict Radar
+The current semantic baseline remains deterministic and local. Optional embeddings or AI providers should plug into the retrieval interface rather than replacing the privacy-first baseline.
 
-Related memories can be shown as possible conflicts when they share meaningful local context. These are review prompts—not automatic conclusions. The user remains the source of truth.
+## Memory Core
 
-## Portable Memory Format v1
+The new `lib/memory-core.ts` layer provides:
 
-Afterimage uses a small versioned interchange format: `afterimage.memory.v1`.
+- source/provenance metadata
+- evidence records
+- importance levels
+- explicit feedback and adaptive confidence
+- memory priority
+- consolidation candidates
+- explicitly approved consolidation
+- temporal memory events
 
-A bundle contains an export timestamp and validated memory records, including return conditions, confidence, lifecycle state, sensitivity and resurfacing history. `/context-signals` provides **Export Memory v1** and **Import Memory v1**. Legacy memory arrays remain importable, while malformed records are rejected locally.
+This keeps the core independent from the Next.js UI so future desktop, Android, CLI, MCP and agent clients can reuse it.
 
-This is intentionally a file format, not a cloud-sync protocol. It allows future desktop, Android, browser and other clients to exchange memories without coupling them to the current `localStorage` implementation.
+## Hybrid retrieval
 
-## Signal history
+`lib/hybrid-retrieval.ts` combines the existing explainable local matcher with an optional semantic retrieval provider. No remote provider is enabled by default.
 
-Context permissions leave a small local audit trail. Afterimage records permission events—grant, revoke, update and expiry—with the signal label/value and timestamp. It does **not** record browsing history, calendar events, location trails or raw app activity.
+This means Afterimage can evolve toward embeddings without making a privacy or infrastructure dependency mandatory.
 
-The history is bounded locally to 200 events and is shown in `/context-signals`.
+## Memory Core API
 
-## Explainable matching
+The stateless route `/api/memory` accepts a memory collection supplied by a client and supports:
 
-The local matcher is deterministic and inspectable. Curated concept groups improve recall without remote embeddings or server-side processing. Per-memory sensitivity can make individual memories quieter or more eager than the global setting.
+- `search`
+- `feedback`
+- `consolidation`
+- `priorities`
 
-Change/contradiction signals are conservative prompts for review rather than automatic deletion or rewriting.
+A future encrypted store can sit behind the same core contracts without forcing today's local-first MVP to change.
 
 ## Privacy
 
-Afterimage is local-first by design. Memories, preferences and signal history remain in the browser unless you explicitly export, move or integrate them.
+Afterimage remains local-first:
 
-Privacy principles:
-
-- **Local by default**
-- **Explicit permissions**
-- **Explainable resurfacing**
-- **Revocable and expiring context access**
-- **No silent browsing surveillance**
-- **Permanent local-data erase controls**
-- **Portable user-owned memory format**
+- memories are user-owned
+- context permissions are explicit, revocable and expiring
+- resurfacing is explainable
+- AI providers are optional
+- the project does not silently upload personal context
+- destructive actions remain user-controlled
+- exported memory remains portable
 
 ## Run locally
 
@@ -97,15 +109,15 @@ Open `http://localhost:3000`.
 
 Useful routes:
 
-- `/` — capture, simulate, validate and manage memories
-- `/future-self` — Future Self Inbox and resurfacing review
+- `/` — capture and contextual resurfacing
+- `/future-self` — Future Self Inbox and timeline
 - `/decisions` — decision history and outcomes
 - `/memory-review` — memory health and conflict review
-- `/context-signals` — permissions, signal history and Memory Format v1
+- `/context-signals` — permissions, signal history and portable memory
 - `/graph` — local memory relationships
 - `/extension-bridge` — explicit browser-memory merge
 - `/settings` — recovery, export, encrypted backup and deletion controls
-- `/memory-vault` — edit, sensitivity, quiet, archive, import, export and forget
+- `/memory-vault` — edit, sensitivity, archive, import, export and forget
 
 ## Build and validate
 
@@ -116,13 +128,14 @@ node scripts/afterimage-storage-check.mjs
 node scripts/afterimage-memory-quality.mjs
 node scripts/afterimage-memory-format-check.mjs
 node scripts/afterimage-memory-health-check.mjs
+node scripts/afterimage-memory-core-check.mjs
 ```
 
 The CI pipeline also runs the Chromium browser smoke suite.
 
 ## Open-source project
 
-Afterimage is being built in public. See `START_HERE.md`, `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, `ROADMAP.md`, `SECURITY.md` and `docs/RECOVERY_AND_PRIVACY.md` for contributor and product guidance.
+Afterimage is being built in public. See `START_HERE.md`, `CONTRIBUTING.md`, `GOOD_FIRST_ISSUES.md`, `ROADMAP.md`, `SECURITY.md` and `docs/RECOVERY_AND_PRIVACY.md`.
 
 ## License
 
