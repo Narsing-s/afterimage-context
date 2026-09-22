@@ -13,7 +13,7 @@ Afterimage now has a browser storage abstraction in `lib/encrypted-memory-store.
 
 ## Security boundary
 
-The primary IndexedDB snapshot is currently **not encrypted by default**. This is intentional until the product has a user-facing vault/passphrase flow and recovery UX. The encryption primitives are implemented separately so enabling encrypted-at-rest storage does not require changing the memory domain model.
+The primary IndexedDB snapshot can now be protected by the user-facing Memory Vault. When the vault is enabled, the memory payload is stored as an AES-256-GCM ciphertext and cannot be loaded without the in-session key. The passphrase is never persisted. A high-entropy recovery key creates a second encrypted recovery path; the recovery secret itself is never stored in plaintext.
 
 Never describe a plaintext IndexedDB snapshot as end-to-end encrypted.
 

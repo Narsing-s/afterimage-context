@@ -11,6 +11,7 @@ import FutureSelfLauncher from '../components/future-self-launcher';
 import WelcomeGate from '../components/welcome-gate';
 import FirstMemoryGuide from '../components/first-memory-guide';
 import PwaRegister from '../components/pwa-register';
+import VaultAutoLock from '../components/vault-auto-lock';
 
 export const metadata: Metadata = {
   title: 'Afterimage — Remember what matters when it matters',
@@ -21,5 +22,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en"><body>{children}<WelcomeGate /><FirstMemoryGuide /><FutureSelfLauncher /><PwaRegister /></body></html>;
+  return <html lang="en"><body>{children}<WelcomeGate /><FirstMemoryGuide /><FutureSelfLauncher /><PwaRegister /><VaultAutoLock /></body></html>;
 }
