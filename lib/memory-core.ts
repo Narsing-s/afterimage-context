@@ -19,6 +19,7 @@ export type MemoryRecord = ContextMemory & {
   supersedes?: string;
   supersededBy?: string;
   tags?: string[];
+  namespace?: string;
 };
 
 export type MemoryEvent = {
@@ -71,7 +72,10 @@ export function consolidate(memories:MemoryRecord[],ids:string[],approvedText:st
   const now=new Date().toISOString(); const id=`memory-${Date.now()}`;
   const merged:MemoryRecord={...selected[0],id,text:approvedText.trim(),createdAt:selected.reduce((x,m)=>x<m.createdAt?x:m.createdAt,now),confidence:Math.max(...selected.map(m=>m.confidence??0.7)),provenance:{source:'ai',capturedAt:now,evidence:selected.flatMap(m=>m.provenance?.evidence||[])},tags:[...new Set(selected.flatMap(m=>m.tags||[]))]};
   const events:MemoryEvent[]=[...selected.map(m=>({id:`${id}:supersedes:${m.id}`,memoryId:m.id,kind:'superseded' as const,at:now,summary:`Superseded by consolidated memory ${id}`})),{id:`${id}:created`,memoryId:id,kind:'created' as const,at:now,summary:'Created from an explicitly approved consolidation.'}];
-  return {memories:[...memories.filter(m=>!ids.includes(m.id)),merged],events};
+  const updatedSelected=selected.map(m=>({...m,supersededBy:id}));
+  const remaining=memories.filter(m=>!ids.includes(m.id));
+  const mergedEvents=[...events,...updatedSelected.map(m=>({id:`${id}:supersedes:${m.id}`,memoryId:m.id,kind:'superseded' as const,at:now,summary:`Superseded by consolidated memory ${id}`,metadata:{supersededBy:id}})),{id:`${id}:created`,memoryId:id,kind:'created' as const,at:now,summary:'Created from an explicitly approved consolidation.'}];
+  return {memories:[...remaining,...updatedSelected,...[merged]],events:mergedEvents};
 }
 
 export function timelineEvents(memory:MemoryRecord,events:MemoryEvent[]=[]):MemoryEvent[]{
