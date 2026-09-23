@@ -160,8 +160,9 @@ export function isEncryptedStorageAvailable() {
 export async function deriveLocalKey(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
   if (!crypto?.subtle) throw new Error('Web Crypto is unavailable.');
   const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveKey']);
-  const stableSalt = new Uint8Array(salt);
-  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: stableSalt.buffer, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  const stableSalt = new ArrayBuffer(salt.byteLength);
+  new Uint8Array(stableSalt).set(salt);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: stableSalt, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
 }
 
 async function deriveRecoveryKey(recoveryKey: string, salt: Uint8Array) { return deriveLocalKey(recoveryKey, salt); }
