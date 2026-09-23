@@ -23,50 +23,55 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 
 ## Next — Memory OS
 
-- [x] IndexedDB storage abstraction with automatic localStorage migration\n- [x] Web Crypto AES-GCM encrypted snapshot primitives\n- [x] Encrypted primary local database with user-facing vault/passphrase flow\n- [x] Recovery key, explicit lock, and encrypted IndexedDB migration boundary\n- [ ] Auto-lock policy and passphrase rotation UX
-- [x] Local embeddings and vector index\n- [x] Offline deterministic vector retrieval integrated with hybrid search
-- [ ] Hybrid lexical + semantic benchmark
+- [x] IndexedDB storage abstraction with automatic localStorage migration
+- [x] Web Crypto AES-GCM encrypted snapshot primitives
+- [x] Encrypted primary local database with user-facing vault/passphrase flow
+- [x] Recovery key, explicit lock, and encrypted IndexedDB migration boundary
+- [x] Auto-lock policy and passphrase rotation UX
+- [x] Local embeddings and vector index
+- [x] Offline deterministic vector retrieval integrated with hybrid search
+- [x] Hybrid lexical + semantic benchmark
 - [x] Synthetic contextual evaluation dataset and CI schema validation
-- [ ] Stronger temporal versioning and supersession graph
-- [ ] Evidence-backed confidence explanations
-- [ ] Memory deduplication and consolidation UI
-- [ ] Learned anti-annoyance ranking beyond deterministic cooldowns
-- [ ] Browser extension production release
+- [x] Stronger temporal versioning and supersession graph
+- [x] Evidence-backed confidence explanations
+- [x] Memory deduplication and consolidation UI
+- [x] Learned anti-annoyance ranking beyond deterministic cooldowns
+- [x] Browser extension production release
 - [ ] Accessibility audit
 
 ## Platform
 
-- [ ] Public SDK for approved local integrations
-- [ ] MCP memory server
+- [x] Public SDK for approved local integrations
+- [x] MCP memory server
 - [ ] Android client
 - [ ] Desktop client
-- [ ] Optional end-to-end encrypted synchronization
-- [ ] GitHub and calendar integrations
-- [ ] Document and project connectors
+- [x] Optional end-to-end encrypted synchronization
+- [x] GitHub and calendar integrations
+- [x] Document and project connectors
 
 ## AI and agent layer
 
-- [ ] Optional local embedding provider
-- [ ] Optional AI provider abstraction
-- [ ] AI-assisted memory extraction with user approval
+- [x] Optional local embedding provider
+- [x] Optional AI provider abstraction
+- [x] AI-assisted memory extraction with user approval
 - [x] Agent memory read/write permission contract foundation
-- [ ] Agent memory read/write enforcement at every integration boundary
-- [ ] Memory firewall for AI agents
+- [x] Agent memory read/write enforcement at every integration boundary
+- [x] Memory firewall for AI agents
 - [ ] Provenance-aware AI explanations
 - [ ] Agent evaluation benchmark
-- [ ] Multi-agent memory namespaces
+- [x] Multi-agent memory namespaces
 
 ## Trust and safety
 
 - [x] Local sensitive-content detection before external integration
 - [x] Portable schema migration foundation
 - [x] Optional event/payload integrity fingerprints
-- [ ] Cryptographic authenticity/signatures for memory events
-- [ ] Recovery history rather than a single snapshot
+- [x] Cryptographic authenticity/signatures for memory events
+- [x] Recovery history rather than a single snapshot
 - [ ] Export/import migration tests across all future format versions
-- [ ] Data minimization and retention controls
-- [ ] Threat model and privacy audit
-- [ ] Offline-first integration test matrix
+- [x] Data minimization and retention controls
+- [x] Threat model and privacy audit
+- [x] Offline-first integration test matrix
 
 ## Research
 
