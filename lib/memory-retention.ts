@@ -1,0 +1,3 @@
+import type {MemoryRecord} from './memory-core';
+export type RetentionPolicy={maxAgeDays?:number;deleteArchivedAfterDays?:number;maxMemories?:number};
+export function applyRetention(memories:MemoryRecord[],policy:RetentionPolicy,now=Date.now()){const age=policy.maxAgeDays?policy.maxAgeDays*86400000:Infinity;const archived=policy.deleteArchivedAfterDays?policy.deleteArchivedAfterDays*86400000:Infinity;let out=memories.filter(m=>{const created=new Date(m.createdAt).getTime();if(now-created>age)return false;if(m.state==='archived'&&now-created>archived)return false;return true});if(policy.maxMemories&&out.length>policy.maxMemories)out=out.sort((a,b)=>(b.confidence??.7)-(a.confidence??.7)).slice(0,policy.maxMemories);return out}
