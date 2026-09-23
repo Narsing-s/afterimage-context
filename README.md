@@ -28,8 +28,15 @@ capture → return condition → context → relevance → feedback → resurfac
 - **Hybrid retrieval API**: deterministic local retrieval now, optional semantic provider later
 - **Memory consolidation candidates** with explicit user approval
 - **Memory feedback learning** for usefulness, noise and importance
-- **Memory Firewall** permission contract for AI agents/integrations
+- **Memory Firewall** enforced permission boundary for AI agents/integrations
 - **Synthetic contextual evaluation dataset** and CI validation
+- AI provider/extraction proposal flow with explicit approval
+- MCP-compatible memory tools with namespace isolation
+- Memory history, supersession tracking and consolidation UI
+- Signed memory-event primitives, retention controls and encrypted sync packages
+- Retrieval benchmark and anti-annoyance ranking
+- GitHub/calendar/document connector interfaces
+- Threat model and integration contract checks
 - **Temporal/provenance primitives** for future desktop, mobile and agent clients
 - **Local API route** at `/api/memory` for search, feedback, consolidation candidates and priorities
 - No account, ads, feed, streaks, notification spam or silent browsing surveillance
@@ -118,6 +125,8 @@ Useful routes:
 - `/context-signals` — permissions, signal history and portable memory
 - `/graph` — local memory relationships
 - `/extension-bridge` — explicit browser-memory merge
+- `/memory-lifecycle` — consolidation and supersession review
+- `/memory-lab` — AI extraction and agent/memory capability lab
 - `/settings` — recovery, export, encrypted backup and deletion controls
 - `/memory-vault` — edit, sensitivity, archive, import, export and forget
 
