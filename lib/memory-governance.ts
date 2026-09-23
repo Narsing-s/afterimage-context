@@ -1,7 +1,8 @@
 import type { MemoryEvent, MemoryRecord } from './memory-core';
 
 export const MEMORY_FORMAT_VERSION = 2;
-export type MemoryEnvelope = { formatVersion: number; exportedAt: string; memories: MemoryRecord[]; events?: MemoryEvent[] };
+export type MemoryVersion = { id:string; memoryId:string; version:number; at:string; snapshot:MemoryRecord; reason:string };
+export type MemoryEnvelope = { formatVersion: number; exportedAt: string; memories: MemoryRecord[]; events?: MemoryEvent[]; history?: MemoryVersion[]; signatures?: Record<string,string> };
 
 const SECRET_PATTERNS: Array<[string,RegExp]> = [
   ['email', /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi],
@@ -42,7 +43,7 @@ export function migrateMemoryEnvelope(input: unknown): MemoryEnvelope {
     confidence: Math.max(.05, Math.min(1, (memory as MemoryRecord).confidence ?? .7)),
     state: (memory as MemoryRecord).state ?? 'active'
   })) : [];
-  return { formatVersion: MEMORY_FORMAT_VERSION, exportedAt: typeof source.exportedAt === 'string' ? source.exportedAt : new Date().toISOString(), memories, events: Array.isArray(source.events) ? source.events as MemoryEvent[] : [] };
+  return { formatVersion: MEMORY_FORMAT_VERSION, exportedAt: typeof source.exportedAt === 'string' ? source.exportedAt : new Date().toISOString(), memories, events: Array.isArray(source.events) ? source.events as MemoryEvent[] : [], history: Array.isArray((source as any).history) ? (source as any).history : [], signatures: (source as any).signatures && typeof (source as any).signatures==='object' ? (source as any).signatures : {} };
 }
 
 export async function integrityHash(value: string) {
