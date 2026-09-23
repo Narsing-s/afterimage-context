@@ -1,0 +1,3 @@
+import {NextResponse} from 'next/server';import {createRuleBasedProvider} from '../../../../lib/ai-provider';import {proposeMemoryExtraction} from '../../../../lib/ai-memory-extraction';
+export const runtime='nodejs';
+export async function POST(request:Request){try{const body=await request.json() as {text?:string};if(!body.text?.trim())return NextResponse.json({error:'text is required.'},{status:400});if(body.text.length>20000)return NextResponse.json({error:'text is too large.'},{status:413});return NextResponse.json({proposals:await proposeMemoryExtraction(body.text,createRuleBasedProvider())})}catch{return NextResponse.json({error:'Unable to extract memory proposals.'},{status:400})}}
