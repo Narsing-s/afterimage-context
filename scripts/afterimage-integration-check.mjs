@@ -1,0 +1,6 @@
+import fs from 'node:fs';
+const required=['lib/agent-memory-boundary.ts','lib/ai-provider.ts','lib/ai-memory-extraction.ts','lib/memory-history.ts','lib/memory-signatures.ts','lib/memory-retention.ts','lib/anti-annoyance.ts','lib/connectors.ts','lib/encrypted-sync.ts','lib/threat-model.ts','lib/mcp-memory.ts','app/api/agent-memory/route.ts','app/api/ai/extract/route.ts','app/api/mcp/route.ts','app/api/retention/route.ts','app/memory-lifecycle/page.tsx','app/memory-lab/page.tsx'];
+const missing=required.filter(p=>!fs.existsSync(p));if(missing.length)throw new Error('Missing integration files: '+missing.join(', '));
+const checks=[['firewall enforcement','lib/agent-memory-boundary.ts','assertAgentAction'],['AI proposal flow','lib/ai-memory-extraction.ts','approved:false'],['event signing','lib/memory-signatures.ts','HMAC'],['retention','lib/memory-retention.ts','applyRetention'],['encrypted sync','lib/encrypted-sync.ts','encryptSnapshot'],['MCP boundary','lib/mcp-memory.ts','assertAgentAction'],['MCP route','app/api/mcp/route.ts','tools/call']];
+for(const [name,file,needle] of checks){if(!fs.readFileSync(file,'utf8').includes(needle))throw new Error(name+' contract missing');}
+console.log('Afterimage integration contracts: PASS');
