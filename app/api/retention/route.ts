@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import {applyRetention,type RetentionPolicy} from '../../../lib/memory-retention';
+export async function POST(request:Request){try{const b=await request.json() as {memories?:any[];policy?:RetentionPolicy};if(!Array.isArray(b.memories))return NextResponse.json({error:'memories is required.'},{status:400});return NextResponse.json({memories:applyRetention(b.memories,b.policy||{})})}catch{return NextResponse.json({error:'Invalid retention request.'},{status:400})}}
