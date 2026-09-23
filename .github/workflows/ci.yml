@@ -48,6 +48,8 @@ jobs:
         run: node scripts/afterimage-memory-firewall-check.mjs
       - name: Check contextual evaluation dataset
         run: node scripts/afterimage-evaluate.mjs
+      - name: Check integration contracts
+        run: node scripts/afterimage-integration-check.mjs
 
   e2e:
     runs-on: ubuntu-latest
