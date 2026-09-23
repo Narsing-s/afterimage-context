@@ -61,6 +61,9 @@ async function readVaultMetadata(): Promise<VaultMetadata | null> {
 }
 
 let unlockedKey: CryptoKey | null = null;
+let autoLockTimer: ReturnType<typeof setTimeout> | null = null;
+const DEFAULT_AUTO_LOCK_MS = 30 * 60 * 1000;
+function armAutoLock(){ if(autoLockTimer) clearTimeout(autoLockTimer); if(unlockedKey){const ms=(globalThis as any).__AFTERIMAGE_AUTO_LOCK_MS__??DEFAULT_AUTO_LOCK_MS;autoLockTimer=setTimeout(()=>{unlockedKey=null;emitVaultState()},ms)}} }
 
 export function isVaultEnabled(): boolean {
   if (typeof window === 'undefined') return false;
@@ -68,6 +71,7 @@ export function isVaultEnabled(): boolean {
 }
 
 export function isVaultUnlocked() { return Boolean(unlockedKey); }
+export function configureAutoLock(minutes:number){ const safe=Math.max(1,Math.min(1440,minutes)); (globalThis as any).__AFTERIMAGE_AUTO_LOCK_MS__=safe*60000; armAutoLock(); return safe; }
 
 export async function getVaultStatus(): Promise<{enabled:boolean;unlocked:boolean}> {
   const metadata = await readVaultMetadata().catch(() => null);
@@ -202,6 +206,7 @@ export async function enableMemoryVault(passphrase: string, snapshot: MemorySnap
   });
   db.close();
   unlockedKey = passKey;
+  armAutoLock();
   if (typeof window !== 'undefined') {
     (window as Window & { __AFTERIMAGE_VAULT__?: boolean }).__AFTERIMAGE_VAULT__ = true;
     localStorage.removeItem('afterimage:memories:v2');
@@ -226,6 +231,7 @@ export async function unlockMemoryVault(passphrase: string): Promise<MemorySnaps
   const key = await deriveLocalKey(passphrase, base64ToBytes(metadata.salt));
   const snapshot = await decryptSnapshot(payload, key);
   unlockedKey = key;
+  armAutoLock();
   if (typeof window !== 'undefined') (window as Window & { __AFTERIMAGE_VAULT__?: boolean }).__AFTERIMAGE_VAULT__ = true;
   emitVaultState();
   return snapshot;
@@ -252,7 +258,20 @@ export async function recoverMemoryVault(recoveryKey: string): Promise<MemorySna
 
 export function lockMemoryVault() {
   unlockedKey = null;
+  if(autoLockTimer) clearTimeout(autoLockTimer);
+  autoLockTimer=null;
   emitVaultState();
+}
+
+export async function rotateVaultPassphrase(currentPassphrase:string,newPassphrase:string):Promise<string>{
+  if(newPassphrase.length<12) throw new Error('Use a vault passphrase with at least 12 characters.');
+  const metadata=await readVaultMetadata(); if(!metadata?.enabled) throw new Error('Memory Vault is not enabled.');
+  const db=await openDatabase(); const payload=await new Promise<EncryptedSnapshot|null>((resolve,reject)=>{const request=db.transaction(STORE,'readonly').objectStore(STORE).get(SNAPSHOT_ID);request.onsuccess=()=>resolve(request.result??null);request.onerror=()=>reject(request.error??new Error('Unable to read encrypted memory payload.'))}); db.close();
+  if(!payload) throw new Error('No encrypted memory payload was found.');
+  const oldKey=await deriveLocalKey(currentPassphrase,base64ToBytes(metadata.salt)); const snapshot=await decryptSnapshot(payload,oldKey);
+  const salt=crypto.getRandomValues(new Uint8Array(16)); const saltBase64=bytesToBase64(salt); const newKey=await deriveLocalKey(newPassphrase,salt); const recoveryKey=makeRecoveryKey(); const recoveryCryptoKey=await deriveRecoveryKey(recoveryKey,salt);
+  const passPayload=await encryptSnapshot(snapshot,newKey,saltBase64); const recoveryPayload=await encryptSnapshot(snapshot,recoveryCryptoKey,saltBase64);
+  const nextMeta={...metadata,salt:saltBase64,updatedAt:new Date().toISOString()}; const db2=await openDatabase(); await new Promise<void>((resolve,reject)=>{const tx=db2.transaction([STORE,META_STORE],'readwrite');tx.objectStore(STORE).put({...passPayload,recoveryIv:recoveryPayload.iv,recoveryCiphertext:recoveryPayload.ciphertext});tx.objectStore(META_STORE).put(nextMeta);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error??new Error('Unable to rotate vault passphrase.'))});db2.close(); unlockedKey=newKey; armAutoLock(); emitVaultState(); return recoveryKey;
 }
 
 export async function disableMemoryVault() {
