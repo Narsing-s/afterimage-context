@@ -11,7 +11,10 @@ export async function POST(request:Request){
     const body=await request.json() as {action?:string;memories?:MemoryRecord[];query?:string;memoryId?:string;feedback?:MemoryFeedback;text?:string};
     const memories=Array.isArray(body.memories)?body.memories:[];
     if(body.action==='search'){
-      const eligible=memories.filter(m=>shouldResurface(m));\n      const index=buildLocalIndex(eligible);\n      const vector=searchVectorIndex(eligible,index,String(body.query||''));\n      const matches=await hybridRetrieve(eligible,String(body.query||''),{provider:{name:'local-vector',search:async()=>vector}});
+      const eligible=memories.filter(m=>shouldResurface(m));
+      const index=buildLocalIndex(eligible);
+      const vector=searchVectorIndex(eligible,index,String(body.query||''));
+      const matches=await hybridRetrieve(eligible,String(body.query||''),{provider:{name:'local-vector',search:async()=>vector}});
       return NextResponse.json({matches});
     }
     if(body.action==='feedback'){
