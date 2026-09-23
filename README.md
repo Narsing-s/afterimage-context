@@ -28,6 +28,8 @@ capture → return condition → context → relevance → feedback → resurfac
 - **Hybrid retrieval API**: deterministic local retrieval now, optional semantic provider later
 - **Memory consolidation candidates** with explicit user approval
 - **Memory feedback learning** for usefulness, noise and importance
+- **Memory Firewall** permission contract for AI agents/integrations
+- **Synthetic contextual evaluation dataset** and CI validation
 - **Temporal/provenance primitives** for future desktop, mobile and agent clients
 - **Local API route** at `/api/memory` for search, feedback, consolidation candidates and priorities
 - No account, ads, feed, streaks, notification spam or silent browsing surveillance
