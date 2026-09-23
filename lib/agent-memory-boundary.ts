@@ -1,0 +1,4 @@
+import { authorize, type MemoryAgent, type MemoryPermission, type MemoryAuditEvent } from './memory-firewall';
+export function resolveNamespace(agent:MemoryAgent, requested?:string){const own=agent.namespace?.trim()||'default';if(!requested)return own;return requested===own?requested:own+':'+requested;}
+export function enforceAgentAction(agent:MemoryAgent, action:MemoryPermission, memoryId?:string, requestedNamespace?:string):{allowed:boolean;audit:MemoryAuditEvent;namespace:string}{const result=authorize(agent,action,memoryId);return {...result,namespace:resolveNamespace(agent,requestedNamespace)};}
+export function assertAgentAction(agent:MemoryAgent, action:MemoryPermission, memoryId?:string, requestedNamespace?:string){const result=enforceAgentAction(agent,action,memoryId,requestedNamespace);if(!result.allowed)throw new Error(result.audit.reason);return result;}
