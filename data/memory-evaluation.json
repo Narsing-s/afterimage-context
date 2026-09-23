@@ -1,0 +1,122 @@
+[
+  {
+    "name": "hosting",
+    "memory": "Choose a simple hosting platform for a small app",
+    "context": "comparing hosting platforms for a small app",
+    "expected": true
+  },
+  {
+    "name": "framework",
+    "memory": "Use the stable framework option for the API",
+    "context": "deciding which framework to use for an API",
+    "expected": true
+  },
+  {
+    "name": "travel",
+    "memory": "Check hotel cancellation policy before booking",
+    "context": "booking a hotel for a trip",
+    "expected": true
+  },
+  {
+    "name": "incident",
+    "memory": "Check queue depth before restarting the worker",
+    "context": "production incident with queue failures",
+    "expected": true
+  },
+  {
+    "name": "purchase",
+    "memory": "Compare total ownership cost before buying a laptop",
+    "context": "shopping for a new laptop",
+    "expected": true
+  },
+  {
+    "name": "database",
+    "memory": "Verify backup before changing the production database",
+    "context": "planning a production database migration",
+    "expected": true
+  },
+  {
+    "name": "api",
+    "memory": "Reuse the existing API contract before creating a new endpoint",
+    "context": "designing an API endpoint",
+    "expected": true
+  },
+  {
+    "name": "security",
+    "memory": "Rotate credentials after a suspected secret exposure",
+    "context": "responding to a credential security incident",
+    "expected": true
+  },
+  {
+    "name": "deployment",
+    "memory": "Check health endpoints after deployment",
+    "context": "verifying a production deployment",
+    "expected": true
+  },
+  {
+    "name": "performance",
+    "memory": "Measure latency before increasing infrastructure",
+    "context": "investigating a slow API",
+    "expected": true
+  },
+  {
+    "name": "calendar",
+    "memory": "Review the decision notes before the next project meeting",
+    "context": "preparing for a project decision meeting",
+    "expected": true
+  },
+  {
+    "name": "documentation",
+    "memory": "Update the runbook after resolving a recurring incident",
+    "context": "writing an operations runbook",
+    "expected": true
+  },
+  {
+    "name": "testing",
+    "memory": "Run regression tests before releasing a change",
+    "context": "preparing a software release",
+    "expected": true
+  },
+  {
+    "name": "cloud",
+    "memory": "Compare cloud cost before migrating workloads",
+    "context": "evaluating cloud hosting options",
+    "expected": true
+  },
+  {
+    "name": "integration",
+    "memory": "Check existing integration dependencies before changing the API",
+    "context": "changing an integration endpoint",
+    "expected": true
+  },
+  {
+    "name": "unrelated-travel",
+    "memory": "Plan a weekend hiking trip",
+    "context": "reviewing a database migration",
+    "expected": false
+  },
+  {
+    "name": "unrelated-food",
+    "memory": "Remember a restaurant recommendation",
+    "context": "debugging an authentication failure",
+    "expected": false
+  },
+  {
+    "name": "unrelated-music",
+    "memory": "Save a playlist for a road trip",
+    "context": "reviewing production API latency",
+    "expected": false
+  },
+  {
+    "name": "unrelated-garden",
+    "memory": "Buy seeds for the garden",
+    "context": "planning a database backup",
+    "expected": false
+  },
+  {
+    "name": "unrelated-sports",
+    "memory": "Track a weekend football match",
+    "context": "designing an API contract",
+    "expected": false
+  }
+]
