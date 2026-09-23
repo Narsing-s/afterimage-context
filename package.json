@@ -8,8 +8,9 @@
     "start": "next start",
     "evaluate": "node scripts/afterimage-evaluate.mjs",
     "check:firewall": "node scripts/afterimage-memory-firewall-check.mjs",
-    "check:all": "npm run build && npm run evaluate && npm run check:firewall && npm run check:integration",
-    "check:integration": "node scripts/afterimage-integration-check.mjs"
+    "check:all": "npm run build && npm run evaluate && npm run check:firewall && npm run check:integration && npm run check:benchmark",
+    "check:integration": "node scripts/afterimage-integration-check.mjs",
+    "check:benchmark": "node scripts/afterimage-retrieval-benchmark-check.mjs"
   },
   "dependencies": {
     "next": "15.5.24",
