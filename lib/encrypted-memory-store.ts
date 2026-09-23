@@ -71,7 +71,8 @@ export function isVaultEnabled(): boolean {
 }
 
 export function isVaultUnlocked() { return Boolean(unlockedKey); }
-export function configureAutoLock(minutes:number){ const safe=Math.max(1,Math.min(1440,minutes)); (globalThis as any).__AFTERIMAGE_AUTO_LOCK_MS__=safe*60000; armAutoLock(); return safe; }
+let activityBound=false;
+export function configureAutoLock(minutes:number){ const safe=Math.max(1,Math.min(1440,minutes)); (globalThis as any).__AFTERIMAGE_AUTO_LOCK_MS__=safe*60000; if(typeof window!=='undefined'&&!activityBound){const reset=()=>{if(unlockedKey)armAutoLock()};['pointerdown','keydown','touchstart','mousemove'].forEach(e=>window.addEventListener(e,reset,{passive:true}));activityBound=true} armAutoLock(); return safe; }
 
 export async function getVaultStatus(): Promise<{enabled:boolean;unlocked:boolean}> {
   const metadata = await readVaultMetadata().catch(() => null);
