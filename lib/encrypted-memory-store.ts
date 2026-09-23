@@ -17,6 +17,8 @@ export type EncryptedSnapshot = {
   salt: string;
   iv: string;
   ciphertext: string;
+  recoveryIv?: string;
+  recoveryCiphertext?: string;
 };
 export type VaultMetadata = {
   id: 'config';
@@ -80,15 +82,17 @@ export function subscribeVaultState(handler: () => void) {
   return () => window.removeEventListener(VAULT_EVENT, handler);
 }
 
+function withSnapshotMetadata(envelope: MemoryEnvelope, updatedAt = new Date().toISOString()): MemorySnapshot {
+  return { ...envelope, id: 'current', updatedAt };
+}
+
 export async function saveMemorySnapshot(memories: MemoryRecord[], events: MemoryEvent[] = []): Promise<MemorySnapshot> {
-  const snapshot: MemorySnapshot = {
-    id: 'current',
+  const snapshot = withSnapshotMetadata({
     formatVersion: MEMORY_FORMAT_VERSION,
     exportedAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
     memories,
     events,
-  };
+  });
   const metadata = await readVaultMetadata();
   if (metadata?.enabled) {
     if (!unlockedKey) throw new Error('Memory Vault is locked.');
@@ -127,11 +131,10 @@ export async function loadMemorySnapshot(): Promise<MemorySnapshot | null> {
   if (!result) return null;
   if (metadata?.enabled) {
     if (!unlockedKey || !('ciphertext' in result)) throw new Error('Encrypted memory payload is unavailable.');
-    return migrateMemoryEnvelope(await decryptSnapshot(result, unlockedKey));
+    return withSnapshotMetadata(migrateMemoryEnvelope(await decryptSnapshot(result, unlockedKey)));
   }
   if ('ciphertext' in result) throw new Error('Encrypted memory payload requires the Memory Vault.');
-  const migrated = migrateMemoryEnvelope(result);
-  return { ...result, ...migrated, id: 'current', updatedAt: result.updatedAt ?? result.exportedAt };
+  return withSnapshotMetadata(migrateMemoryEnvelope(result), result.updatedAt ?? result.exportedAt);
 }
 
 export async function clearMemorySnapshot(): Promise<void> {
@@ -155,9 +158,7 @@ export async function deriveLocalKey(passphrase: string, salt: Uint8Array): Prom
   return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
 }
 
-async function deriveRecoveryKey(recoveryKey: string, salt: Uint8Array) {
-  return deriveLocalKey(recoveryKey, salt);
-}
+async function deriveRecoveryKey(recoveryKey: string, salt: Uint8Array) { return deriveLocalKey(recoveryKey, salt); }
 
 export async function encryptSnapshot(snapshot: MemorySnapshot, key: CryptoKey, saltBase64 = ''): Promise<EncryptedSnapshot> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -169,7 +170,8 @@ export async function decryptSnapshot(payload: {iv:string;ciphertext:string}, ke
   const iv = base64ToBytes(payload.iv);
   const ciphertext = base64ToBytes(payload.ciphertext);
   const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
-  return JSON.parse(new TextDecoder().decode(plaintext)) as MemorySnapshot;
+  const parsed: unknown = JSON.parse(new TextDecoder().decode(plaintext));
+  return withSnapshotMetadata(migrateMemoryEnvelope(parsed));
 }
 
 function makeRecoveryKey() {
@@ -225,7 +227,7 @@ export async function unlockMemoryVault(passphrase: string): Promise<MemorySnaps
   unlockedKey = key;
   if (typeof window !== 'undefined') (window as Window & { __AFTERIMAGE_VAULT__?: boolean }).__AFTERIMAGE_VAULT__ = true;
   emitVaultState();
-  return migrateMemoryEnvelope(snapshot);
+  return snapshot;
 }
 
 export async function recoverMemoryVault(recoveryKey: string): Promise<MemorySnapshot> {
@@ -244,7 +246,7 @@ export async function recoverMemoryVault(recoveryKey: string): Promise<MemorySna
   unlockedKey = key;
   if (typeof window !== 'undefined') (window as Window & { __AFTERIMAGE_VAULT__?: boolean }).__AFTERIMAGE_VAULT__ = true;
   emitVaultState();
-  return migrateMemoryEnvelope(snapshot);
+  return snapshot;
 }
 
 export function lockMemoryVault() {
@@ -282,6 +284,8 @@ export async function clearVaultStorage() {
   });
   db.close();
   unlockedKey = null;
-  if (typeof window !== 'undefined') (window as Window & { __AFTERIMAGE_VAULT__?: boolean }).__AFTERIMAGE_VAULT__ = false;
+  if (typeof window !== 'undefined') {
+    (window as Window & { __AFTERIMAGE_VAULT__?: boolean }).__AFTERIMAGE_VAULT__ = false;
+  }
   emitVaultState();
 }
