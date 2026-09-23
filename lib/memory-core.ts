@@ -69,13 +69,11 @@ export function findConsolidationCandidates(memories:MemoryRecord[],threshold=0.
 
 export function consolidate(memories:MemoryRecord[],ids:string[],approvedText:string):{memories:MemoryRecord[];events:MemoryEvent[]}{
   const selected=memories.filter(m=>ids.includes(m.id)); if(selected.length<2) return {memories,events:[]};
-  const now=new Date().toISOString(); const id=`memory-${Date.now()}`;
-  const merged:MemoryRecord={...selected[0],id,text:approvedText.trim(),createdAt:selected.reduce((x,m)=>x<m.createdAt?x:m.createdAt,now),confidence:Math.max(...selected.map(m=>m.confidence??0.7)),provenance:{source:'ai',capturedAt:now,evidence:selected.flatMap(m=>m.provenance?.evidence||[])},tags:[...new Set(selected.flatMap(m=>m.tags||[]))]};
-  const events:MemoryEvent[]=[...selected.map(m=>({id:`${id}:supersedes:${m.id}`,memoryId:m.id,kind:'superseded' as const,at:now,summary:`Superseded by consolidated memory ${id}`})),{id:`${id}:created`,memoryId:id,kind:'created' as const,at:now,summary:'Created from an explicitly approved consolidation.'}];
-  const updatedSelected=selected.map(m=>({...m,supersededBy:id}));
-  const remaining=memories.filter(m=>!ids.includes(m.id));
-  const mergedEvents=[...events,...updatedSelected.map(m=>({id:`${id}:supersedes:${m.id}`,memoryId:m.id,kind:'superseded' as const,at:now,summary:`Superseded by consolidated memory ${id}`,metadata:{supersededBy:id}})),{id:`${id}:created`,memoryId:id,kind:'created' as const,at:now,summary:'Created from an explicitly approved consolidation.'}];
-  return {memories:[...remaining,...updatedSelected,...[merged]],events:mergedEvents};
+  const now=new Date().toISOString(); const id='memory-'+Date.now();
+  const merged:MemoryRecord={...selected[0],id,text:approvedText.trim(),createdAt:selected.reduce((x,m)=>x<m.createdAt?x:m.createdAt,now),confidence:Math.max(...selected.map(m=>m.confidence??0.7)),provenance:{source:'ai',capturedAt:now,evidence:selected.flatMap(m=>m.provenance?.evidence||[])},tags:[...new Set(selected.flatMap(m=>m.tags||[]))],state:'active'};
+  const superseded=selected.map(m=>({...m,state:'outdated' as const,supersededBy:id}));
+  const events:MemoryEvent[]=[...superseded.map(m=>({id:id+':supersedes:'+m.id,memoryId:m.id,kind:'superseded' as const,at:now,summary:'Superseded by consolidated memory '+id,metadata:{supersededBy:id}})),{id:id+':created',memoryId:id,kind:'created' as const,at:now,summary:'Created from an explicitly approved consolidation.'}];
+  return {memories:[...memories.filter(m=>!ids.includes(m.id)),...superseded,merged],events};
 }
 
 export function timelineEvents(memory:MemoryRecord,events:MemoryEvent[]=[]):MemoryEvent[]{
