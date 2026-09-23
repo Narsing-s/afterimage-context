@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Archive, Check, Clock3, Download, KeyRound, LockKeyhole, Pencil, ShieldCheck, Trash2, UnlockKeyhole, Upload, X } from 'lucide-react';
 import { ContextMemory, MemoryState, MemorySensitivity, snoozeMemory } from '../../lib/context-engine';
 import { saveRecovery } from '../../lib/recovery';
-import { clearVaultStorage, enableMemoryVault, getVaultStatus, isVaultUnlocked, loadMemorySnapshot, lockMemoryVault, recoverMemoryVault, saveMemorySnapshot, unlockMemoryVault } from '../../lib/encrypted-memory-store';
+import { clearVaultStorage, enableMemoryVault, getVaultStatus, isVaultUnlocked, loadMemorySnapshot, lockMemoryVault, recoverMemoryVault, saveMemorySnapshot, unlockMemoryVault, rotateVaultPassphrase, configureAutoLock } from '../../lib/encrypted-memory-store';
 
 type Memory = ContextMemory;
 const STORAGE_KEY = 'afterimage:memories:v2';
