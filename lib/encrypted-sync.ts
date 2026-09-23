@@ -1,0 +1,3 @@
+import {encryptSnapshot,decryptSnapshot,type MemorySnapshot} from './encrypted-memory-store';
+export async function createEncryptedSyncPackage(snapshot:MemorySnapshot,key:CryptoKey,salt:string){const payload=await encryptSnapshot(snapshot,key,salt);return JSON.stringify({version:1,kind:'afterimage.encrypted-sync',createdAt:new Date().toISOString(),payload})}
+export async function openEncryptedSyncPackage(value:string,key:CryptoKey){const parsed=JSON.parse(value) as {kind:string;payload:{iv:string;ciphertext:string}};if(parsed.kind!=='afterimage.encrypted-sync')throw new Error('Unsupported sync package.');return decryptSnapshot(parsed.payload,key)}
