@@ -33,21 +33,21 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Hybrid lexical + semantic benchmark
 - [x] Synthetic contextual evaluation dataset and CI schema validation
 - [x] Stronger temporal versioning and supersession graph
-- [x] Evidence-backed confidence explanations
+- [ ] Evidence-backed confidence explanations
 - [x] Memory deduplication and consolidation UI
-- [x] Learned anti-annoyance ranking beyond deterministic cooldowns
+- [ ] Learned anti-annoyance ranking beyond deterministic cooldowns
 - [x] Browser extension production release
 - [ ] Accessibility audit
 
 ## Platform
 
-- [x] Public SDK for approved local integrations
+- [ ] Public SDK for approved local integrations
 - [x] MCP memory server
 - [ ] Android client
 - [ ] Desktop client
-- [x] Optional end-to-end encrypted synchronization
-- [x] GitHub and calendar integrations
-- [x] Document and project connectors
+- [ ] Optional end-to-end encrypted synchronization
+- [ ] GitHub and calendar integrations
+- [ ] Document and project connectors
 
 ## AI and agent layer
 
@@ -67,7 +67,7 @@ Afterimage is an open exploration of context-memory computing. The roadmap is in
 - [x] Portable schema migration foundation
 - [x] Optional event/payload integrity fingerprints
 - [x] Cryptographic authenticity/signatures for memory events
-- [x] Recovery history rather than a single snapshot
+- [ ] Recovery history rather than a single snapshot
 - [ ] Export/import migration tests across all future format versions
 - [x] Data minimization and retention controls
 - [x] Threat model and privacy audit
