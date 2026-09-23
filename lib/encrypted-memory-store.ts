@@ -63,7 +63,7 @@ async function readVaultMetadata(): Promise<VaultMetadata | null> {
 let unlockedKey: CryptoKey | null = null;
 let autoLockTimer: ReturnType<typeof setTimeout> | null = null;
 const DEFAULT_AUTO_LOCK_MS = 30 * 60 * 1000;
-function armAutoLock(){ if(autoLockTimer) clearTimeout(autoLockTimer); if(unlockedKey){const ms=(globalThis as any).__AFTERIMAGE_AUTO_LOCK_MS__??DEFAULT_AUTO_LOCK_MS;autoLockTimer=setTimeout(()=>{unlockedKey=null;emitVaultState()},ms)}} }
+function armAutoLock(){ if(autoLockTimer) clearTimeout(autoLockTimer); if(unlockedKey){const ms=(globalThis as any).__AFTERIMAGE_AUTO_LOCK_MS__??DEFAULT_AUTO_LOCK_MS;autoLockTimer=setTimeout(()=>{unlockedKey=null;emitVaultState()},ms)}}
 
 export function isVaultEnabled(): boolean {
   if (typeof window === 'undefined') return false;
