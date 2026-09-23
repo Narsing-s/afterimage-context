@@ -1,0 +1,3 @@
+import {NextResponse} from 'next/server';import {handleMemoryTool} from '../../../lib/mcp-memory';import type {MemoryAgent} from '../../../lib/memory-firewall';
+export const runtime='nodejs';
+export async function POST(request:Request){try{const body=await request.json() as {agent?:MemoryAgent;tool?:string;args?:any;memories?:any[]};if(!body.agent?.id||!Array.isArray(body.agent.permissions))return NextResponse.json({error:'A valid agent policy is required.'},{status:400});const result=await handleMemoryTool(body.agent,body.tool||'',body.args||{},body.memories||[]);return NextResponse.json({ok:true,result})}catch(e){return NextResponse.json({ok:false,error:e instanceof Error?e.message:'Agent request rejected.'},{status:403})}}
