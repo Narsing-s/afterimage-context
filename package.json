@@ -13,7 +13,7 @@
     "check:benchmark": "node scripts/afterimage-retrieval-benchmark-check.mjs"
   },
   "dependencies": {
-    "next": "15.5.24",
+    "next": "15.5.27",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "lucide-react": "^0.468.0"
